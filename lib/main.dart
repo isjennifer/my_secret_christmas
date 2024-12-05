@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'write_message.dart';
 
 void main() {
   runApp(const MyApp());
@@ -65,11 +66,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   context,
                   '시크릿 크리스마스\n메시지 보내기',
                   () {
-                    print('첫 번째 버튼 클릭');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const WriteMessagePage()),
+                    );
                   },
                   buttonSize,
                 ),
-                SizedBox(height: availableHeight * 0.01), // 화면 높이의 4%
+                SizedBox(height: availableHeight * 0.05), // 화면 높이의 5%
                 _buildCircularButton(
                   context,
                   '내가 받은\n시크릿 메시지 풀기',
