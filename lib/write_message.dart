@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'steps/message_step.dart';
+import 'steps/card_selection_step.dart';
+import 'steps/hide_message_step.dart';
+import 'steps/quiz_step.dart';
+import 'steps/send_message_step.dart';
 
 class WriteMessagePage extends StatefulWidget {
   const WriteMessagePage({super.key});
@@ -105,53 +110,38 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
   Widget _buildCurrentStepContent() {
     switch (_currentStep) {
       case 0:
-        return _buildMessageStep();
+        return MessageStep(
+          onNext: () => setState(() => _currentStep++),
+          messageController: _messageController,
+          toController: _toController,
+          fromController: _fromController,
+        );
       case 1:
-        return _buildCardSelectionStep();
+        return CardSelectionStep(
+          onNext: () => setState(() => _currentStep++),
+          onPrevious: () => setState(() => _currentStep--),
+        );
       case 2:
-        return _buildHideMessageStep();
+        return HideMessageStep(
+          onNext: () => setState(() => _currentStep++),
+          onPrevious: () => setState(() => _currentStep--),
+        );
       case 3:
-        return _buildQuizStep();
+        return QuizStep(
+          onNext: () => setState(() => _currentStep++),
+          onPrevious: () => setState(() => _currentStep--),
+        );
       case 4:
-        return _buildSendMessageStep();
+        return SendMessageStep(
+          onComplete: () {
+            print('메시지 전송');
+            Navigator.pop(context);
+          },
+          onPrevious: () => setState(() => _currentStep--),
+        );
       default:
         return Container();
     }
-  }
-
-  Widget _buildMessageStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        TextField(
-          controller: _toController,
-          decoration: const InputDecoration(
-            labelText: '보내는 사람',
-            border: OutlineInputBorder(),
-          ),
-          maxLength: 10,
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _messageController,
-          maxLines: 10,
-          decoration: const InputDecoration(
-            labelText: '크리스마스 메시지를 작성해주세요!',
-            border: OutlineInputBorder(),
-          ),
-          maxLength: 200,
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _fromController,
-          decoration: const InputDecoration(
-            labelText: '받는 사람',
-            border: OutlineInputBorder(),
-          ),
-          maxLength: 10,
-        ),
-      ],
-    );
   }
 
   Widget _buildCardSelectionStep() {
@@ -261,8 +251,7 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
                                       vertical: 12,
                                     ),
                                   ),
-                                  child: Text(
-                                      _currentStep < 4 ? '다음' : '메시지 전송하기'),
+                                  child: Text(_currentStep < 4 ? '다음' : '완료'),
                                 ),
                               ],
                             ),
