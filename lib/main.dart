@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_secret_christmas/decode_message_modal.dart';
 import 'write_message.dart';
 
 void main() {
@@ -79,7 +80,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   context,
                   '내가 받은\n시크릿 메시지 풀기',
                   () {
-                    print('두 번째 버튼 클릭');
+                    showDialog(
+                      context: context,
+                      builder: (context) => const DecodeMessageModal(),
+                    );
                   },
                   buttonSize,
                 ),
