@@ -17,22 +17,93 @@ class HideMessageStep extends StatefulWidget {
 }
 
 class _HideMessageStepState extends State<HideMessageStep> {
-  String? selectedHideMethod;
+  bool _isHiding = true;
+  bool _isComplete = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startHidingProcess();
+  }
+
+  Future<void> _startHidingProcess() async {
+    // 실제 메시지 숨기기 로직이 들어갈 자리입니다.
+    // 현재는 시뮬레이션을 위해 딜레이만 추가합니다.
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (mounted) {
+      setState(() {
+        _isHiding = false;
+        _isComplete = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
-          '메시지를 숨기는 방법을 선택해주세요',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
         const SizedBox(height: 20),
-        // 여기에 메시지 숨기기 방법 선택 UI 구현
-        const Center(
-          child: Text('메시지 숨기기 UI가 구현될 예정입니다'),
-        ),
+        if (_isHiding) ...[
+          const CircularProgressIndicator(
+            color: Colors.red,
+            strokeWidth: 5,
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            '메시지 숨기는 중...',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            '잠시만 기다려주세요',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ] else if (_isComplete) ...[
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.red.shade50,
+            ),
+            child: Icon(
+              Icons.check_circle,
+              size: 60,
+              color: Colors.red.shade400,
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            '메시지 숨기기 완료!',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            '다음 버튼을 눌러주세요.',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+        ],
       ],
     );
   }
