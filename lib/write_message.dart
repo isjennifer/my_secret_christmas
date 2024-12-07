@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_secret_christmas/main.dart';
 import 'steps/message_step.dart';
 import 'steps/card_selection_step.dart';
 import 'steps/hide_message_step.dart';
@@ -240,7 +241,15 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
                                     } else {
                                       // 메시지 전송 로직 구현
                                       print('메시지 전송');
-                                      Navigator.pop(context);
+                                      _currentStep < 4
+                                          ? Navigator.pop(context)
+                                          : Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const MyHomePage(title: ''),
+                                              ));
+                                      ;
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(

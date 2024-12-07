@@ -1,6 +1,7 @@
 // lib/pages/decode_message_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:my_secret_christmas/steps/message_reveal_step.dart';
 
 class DecodeMessagePage extends StatefulWidget {
   const DecodeMessagePage({super.key});
@@ -171,6 +172,12 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     // TODO: 정답 체크 로직
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const MessageRevealPage()),
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
