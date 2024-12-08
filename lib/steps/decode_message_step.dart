@@ -30,7 +30,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/cards/card1.jpg'),
+            image: AssetImage('assets/home_image.jpeg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -61,21 +61,17 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                               ),
                             ],
                           ),
-                          child: Column(
+                          child: const Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const SizedBox(height: 10),
-                              Container(
-                                width: 200,
-                                height: 200,
-                                color: Colors.red,
-                                child: Image.asset(
-                                  'assets/cards/card1.jpg',
-                                  fit: BoxFit.cover,
-                                ),
+                              SizedBox(height: 10),
+                              ShakingEnvelope(
+                                width: 100,
+                                height: 100,
+                                imagePath: 'assets/envelope_color.png',
                               ),
-                              const SizedBox(height: 15),
-                              const Text(
+                              SizedBox(height: 15),
+                              Text(
                                 '(발신자)님이 크리스마스 메시지를 보냈어요!',
                                 style: TextStyle(
                                   fontSize: 18,
@@ -84,8 +80,8 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(height: 10),
-                              const Text(
+                              SizedBox(height: 10),
+                              Text(
                                 '(발신자)가 (수신자)에게 보내는\n멋진 크리스마스 카드가 도착했어요!\n안에는 시크릿 메시지가 숨겨져있어요.\n메시지를 보려면 (발신자)가 낸 퀴즈를 맞혀야해요.\n얼른 풀어볼까요?',
                                 style: TextStyle(
                                   fontSize: 16,
@@ -209,6 +205,85 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class ShakingEnvelope extends StatefulWidget {
+  final double width;
+  final double height;
+  final String imagePath;
+
+  const ShakingEnvelope({
+    required this.width,
+    required this.height,
+    required this.imagePath,
+    super.key,
+  });
+
+  @override
+  State<ShakingEnvelope> createState() => _ShakingEnvelopeState();
+}
+
+class _ShakingEnvelopeState extends State<ShakingEnvelope>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 애니메이션 컨트롤러 초기화
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+
+    // 쉐이킹 효과를 위한 Tween 애니메이션 설정
+    _animation = Tween<double>(
+      begin: -1.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        // 더 자연스러운 흔들림을 위해 사인 곡선 사용
+        curve: Curves.easeInOut,
+      ),
+    )..addListener(() {
+        setState(() {});
+      });
+
+    // 애니메이션 시작
+    _controller.repeat(reverse: true);
+
+    // 1.5초 후 애니메이션 정지
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      _controller.stop();
+      // 원래 위치로 복귀
+      _controller.animateTo(0.5);
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      // 각도를 라디안으로 변환 (약한 흔들림을 위해 0.05를 곱함)
+      angle: _animation.value * 0.1,
+      child: Container(
+        width: widget.width,
+        height: widget.height,
+        child: Image.asset(
+          widget.imagePath,
+          fit: BoxFit.cover,
         ),
       ),
     );
