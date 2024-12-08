@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
@@ -23,7 +25,66 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: const MyHomePage(title: 'Merry Secret Christmas'),
+      home: const SplashScreen(),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  bool _showLogo = true; // 초기에는 로고를 보여줍니다
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 2초 후에 스플래시 이미지로 전환
+    Timer(const Duration(seconds: 2), () {
+      setState(() {
+        _showLogo = false; // 로고를 숨기고 스플래시 이미지를 보여줍니다
+      });
+
+      // 추가로 1초 후에 메인 페이지로 이동
+      Timer(const Duration(seconds: 2), () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => MyHomePage(title: 'Merry Secret Christmas'),
+          ),
+        );
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: AnimatedCrossFade(
+        duration: const Duration(milliseconds: 500), // 페이드 애니메이션 시간
+        firstChild: Center(
+          child: Image.asset(
+            'assets/laq_logo.png', // 로고 이미지 경로
+            width: 200, // 로고 크기 조절
+            height: 200,
+          ),
+        ),
+        secondChild: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/splash_screen.jpeg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        crossFadeState:
+            _showLogo ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      ),
     );
   }
 }
