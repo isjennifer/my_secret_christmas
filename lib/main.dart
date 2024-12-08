@@ -1,12 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
 import 'write_message.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    // 최상위 위젯을 ProviderScope로 감싸기
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
