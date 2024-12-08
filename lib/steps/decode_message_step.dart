@@ -12,6 +12,9 @@ class DecodeMessagePage extends StatefulWidget {
 
 class _DecodeMessagePageState extends State<DecodeMessagePage> {
   final _answerController = TextEditingController();
+  static const String CORRECT_ANSWER = '정답';
+
+  int _attemptCount = 0;
 
   @override
   void dispose() {
@@ -126,6 +129,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                     ),
                                   ),
                                   // 하트 표시
+
                                   Text(
                                     '❤️ ❤️ ❤️',
                                     style: TextStyle(
@@ -136,7 +140,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                               ),
                               const SizedBox(height: 20),
                               const Text(
-                                '이 사람이 가장 좋아하는 크리스마스 캐롤은?',
+                                'Q. 이 사람이 가장 좋아하는 크리스마스 캐롤은?',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
@@ -167,13 +171,48 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    // TODO: 정답 체크 로직
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const MessageRevealPage()),
-                                    );
+                                    setState(() {
+                                      _attemptCount++; // 버튼을 누를 때마다 시도 횟수 증가
+                                    });
+                                    final userAnswer =
+                                        _answerController.text.trim();
+                                    if (userAnswer == CORRECT_ANSWER) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const MessageRevealPage()),
+                                      );
+                                    } else if (_attemptCount == 1 &&
+                                        userAnswer != CORRECT_ANSWER) {
+                                      // 오답일 경우 사용자에게 피드백 제공
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('1번 틀렸습니다. 다시 시도해보세요!'),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    } else if (_attemptCount == 2 &&
+                                        userAnswer != CORRECT_ANSWER) {
+                                      // 오답일 경우 사용자에게 피드백 제공
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('2번 틀렸습니다. 다시 시도해보세요!'),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    } else {
+                                      // 오답일 경우 사용자에게 피드백 제공
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('3번 틀렸습니다. 다시 시도해보세요!'),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
