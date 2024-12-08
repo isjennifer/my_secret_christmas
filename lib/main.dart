@@ -219,15 +219,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   Positioned(
-                    top: 20,
-                    right: 20,
+                    top: 10,
+                    right: 10,
                     child: IconButton(
                       icon: Icon(
                         _audioService.isPlaying
                             ? Icons.volume_up
                             : Icons.volume_off,
                         color: Theme.of(context).primaryColor,
-                        size: 28,
+                        size: 20,
                       ),
                       onPressed: () {
                         if (_audioService.isPlaying) {
@@ -239,6 +239,50 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                   ),
+                  Positioned(
+                    bottom: -15,
+                    left: 0,
+                    child: InkWell(
+                      onTap: () {
+                        // 클릭 시 실행될 로직
+                      },
+                      child: SizedBox(
+                        width: 130,
+                        height: 130,
+                        child: Image.asset(
+                          'assets/book.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    right: 0,
+                    child: InkWell(
+                      onTap: () {
+                        // 클릭 시 실행될 로직
+                      },
+                      child: SizedBox(
+                        width: 130,
+                        height: 130,
+                        child: Image.asset(
+                          'assets/postbox.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -10,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Image.asset(
+                        'assets/snow_bottom.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
