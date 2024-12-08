@@ -1,31 +1,87 @@
+//main.dart 페이지
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
 import 'write_message.dart';
+import './widgets/snowflake.dart';
+import './widgets/snow_theme.dart';
+import './widgets/snow_wrapper.dart';
+import './widgets/audio_service.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+// This widget is the root of your application.
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  final AudioService _audioService = AudioService();
+
+  @override
+  void initState() {
+    super.initState();
+    _initBackgroundMusic();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  Future<void> _initBackgroundMusic() async {
+    await _audioService.initBackgroundMusic('audio/background_music.mp3');
+    await _audioService.play();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // 앱 상태 변경 시 음악 제어
+    switch (state) {
+      case AppLifecycleState.paused:
+        // 앱이 백그라운드로 갈 때
+        _audioService.pause();
+        break;
+      case AppLifecycleState.resumed:
+        // 앱이 포그라운드로 돌아올 때
+        if (_audioService.isPlaying) {
+          _audioService.play();
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _audioService.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Merry Secret Christmas',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 110, 20, 20)),
-        useMaterial3: true,
-        textTheme: GoogleFonts.gowunDodumTextTheme(
-          Theme.of(context).textTheme,
+    return SnowTheme(
+      showSnow: true, // 눈 효과 켜기/끄기 제어
+      child: MaterialApp(
+        title: 'Merry Secret Christmas',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 110, 20, 20),
+          ),
+          useMaterial3: true,
+          textTheme: GoogleFonts.gowunDodumTextTheme(
+            Theme.of(context).textTheme,
+          ),
         ),
+        builder: (context, child) {
+          return SnowWrapper(child: child!);
+        },
+        home: const SplashScreen(),
       ),
-      home: const SplashScreen(),
     );
   }
 }
@@ -108,50 +164,139 @@ class _MyHomePageState extends State<MyHomePage> {
     // 버튼의 최대 크기 계산
     final buttonSize = (MediaQuery.of(context).size.width - 40)
         .clamp(0.0, availableHeight * 0.35);
+    final AudioService _audioService = AudioService(); // AudioService 인스턴스 추가
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/home_image.jpeg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildCircularButton(
-                  context,
-                  '시크릿 크리스마스\n메시지 보내기',
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const WriteMessagePage()),
-                    );
-                  },
-                  buttonSize,
-                ),
-                SizedBox(height: availableHeight * 0.05), // 화면 높이의 5%
-                _buildCircularButton(
-                  context,
-                  '내가 받은\n시크릿 메시지 풀기',
-                  () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const DecodeMessageModal(),
-                    );
-                  },
-                  buttonSize,
-                ),
-              ],
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/home_image.jpeg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: SafeArea(
+              child: Stack(
+                children: [
+                  Center(
+                    // Column을 Center로 감싸서 중앙 정렬 유지
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildCircularButton(
+                            context,
+                            '시크릿 크리스마스\n메시지 보내기',
+                            () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const WriteMessagePage(),
+                                ),
+                              );
+                            },
+                            buttonSize,
+                          ),
+                          SizedBox(height: availableHeight * 0.05),
+                          _buildCircularButton(
+                            context,
+                            '내가 받은\n시크릿 메시지 풀기',
+                            () {
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    const DecodeMessageModal(),
+                              );
+                            },
+                            buttonSize,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: IconButton(
+                      icon: Icon(
+                        _audioService.isPlaying
+                            ? Icons.volume_up
+                            : Icons.volume_off,
+                        color: Theme.of(context).primaryColor,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        if (_audioService.isPlaying) {
+                          _audioService.pause();
+                        } else {
+                          _audioService.play();
+                        }
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -15,
+                    left: 0,
+                    child: InkWell(
+                      onTap: () {
+                        // 클릭 시 실행될 로직
+                      },
+                      child: SizedBox(
+                        width: 130,
+                        height: 130,
+                        child: Image.asset(
+                          'assets/book.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    right: 0,
+                    child: InkWell(
+                      onTap: () {
+                        // 클릭 시 실행될 로직
+                      },
+                      child: SizedBox(
+                        width: 130,
+                        height: 130,
+                        child: Image.asset(
+                          'assets/postbox.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -10,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Image.asset(
+                        'assets/snow_bottom.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-        ),
+          const RepaintBoundary(
+            child: IgnorePointer(
+              // 여기에 IgnorePointer 추가
+              child: SnowfallWidget(
+                numberOfSnowflakes: 100,
+                snowColor: Colors.white,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
