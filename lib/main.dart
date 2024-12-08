@@ -1,52 +1,152 @@
+//main.dart 페이지
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:my_secret_christmas/decode_message_modal.dart';
+import 'write_message.dart';
+import './widgets/snowflake.dart';
+import './widgets/snow_theme.dart';
+import './widgets/snow_wrapper.dart';
+import './widgets/audio_service.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+// This widget is the root of your application.
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  final AudioService _audioService = AudioService();
+
+  @override
+  void initState() {
+    super.initState();
+    _initBackgroundMusic();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  Future<void> _initBackgroundMusic() async {
+    await _audioService.initBackgroundMusic('audio/background_music.mp3');
+    await _audioService.play();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // 앱 상태 변경 시 음악 제어
+    switch (state) {
+      case AppLifecycleState.paused:
+        // 앱이 백그라운드로 갈 때
+        _audioService.pause();
+        break;
+      case AppLifecycleState.resumed:
+        // 앱이 포그라운드로 돌아올 때
+        if (_audioService.isPlaying) {
+          _audioService.play();
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _audioService.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return SnowTheme(
+      showSnow: true, // 눈 효과 켜기/끄기 제어
+      child: MaterialApp(
+        title: 'Merry Secret Christmas',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 110, 20, 20),
+          ),
+          useMaterial3: true,
+          textTheme: GoogleFonts.gowunDodumTextTheme(
+            Theme.of(context).textTheme,
+          ),
+        ),
+        builder: (context, child) {
+          return SnowWrapper(child: child!);
+        },
+        home: const SplashScreen(),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  bool _showLogo = true; // 초기에는 로고를 보여줍니다
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 2초 후에 스플래시 이미지로 전환
+    Timer(const Duration(seconds: 2), () {
+      setState(() {
+        _showLogo = false; // 로고를 숨기고 스플래시 이미지를 보여줍니다
+      });
+
+      // 추가로 1초 후에 메인 페이지로 이동
+      Timer(const Duration(seconds: 2), () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => MyHomePage(title: 'Merry Secret Christmas'),
+          ),
+        );
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: AnimatedCrossFade(
+        duration: const Duration(milliseconds: 500), // 페이드 애니메이션 시간
+        firstChild: Center(
+          child: Image.asset(
+            'assets/laq_logo.png', // 로고 이미지 경로
+            width: 200, // 로고 크기 조절
+            height: 200,
+          ),
+        ),
+        secondChild: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/splash_screen.jpeg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        crossFadeState:
+            _showLogo ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -55,71 +155,200 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    // 화면의 사용 가능한 높이를 계산 (상태바 등 제외)
+    final availableHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).padding.bottom;
+    // 버튼의 최대 크기 계산
+    final buttonSize = (MediaQuery.of(context).size.width - 40)
+        .clamp(0.0, availableHeight * 0.35);
+    final AudioService _audioService = AudioService(); // AudioService 인스턴스 추가
+
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/home_image.jpeg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: SafeArea(
+              child: Stack(
+                children: [
+                  Center(
+                    // Column을 Center로 감싸서 중앙 정렬 유지
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildCircularButton(
+                            context,
+                            '시크릿 크리스마스\n메시지 보내기',
+                            () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const WriteMessagePage(),
+                                ),
+                              );
+                            },
+                            buttonSize,
+                          ),
+                          SizedBox(height: availableHeight * 0.05),
+                          _buildCircularButton(
+                            context,
+                            '내가 받은\n시크릿 메시지 풀기',
+                            () {
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    const DecodeMessageModal(),
+                              );
+                            },
+                            buttonSize,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: IconButton(
+                      icon: Icon(
+                        _audioService.isPlaying
+                            ? Icons.volume_up
+                            : Icons.volume_off,
+                        color: Theme.of(context).primaryColor,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        if (_audioService.isPlaying) {
+                          _audioService.pause();
+                        } else {
+                          _audioService.play();
+                        }
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -15,
+                    left: 0,
+                    child: InkWell(
+                      onTap: () {
+                        // 클릭 시 실행될 로직
+                      },
+                      child: SizedBox(
+                        width: 130,
+                        height: 130,
+                        child: Image.asset(
+                          'assets/book.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    right: 0,
+                    child: InkWell(
+                      onTap: () {
+                        // 클릭 시 실행될 로직
+                      },
+                      child: SizedBox(
+                        width: 130,
+                        height: 130,
+                        child: Image.asset(
+                          'assets/postbox.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -10,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Image.asset(
+                        'assets/snow_bottom.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          const RepaintBoundary(
+            child: IgnorePointer(
+              // 여기에 IgnorePointer 추가
+              child: SnowfallWidget(
+                numberOfSnowflakes: 100,
+                snowColor: Colors.white,
+              ),
+            ),
+          )
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+    );
+  }
+
+  Widget _buildCircularButton(
+      BuildContext context, String text, VoidCallback onPressed, double size) {
+    final borderColor = text.contains('보내기') ? Colors.red : Colors.green;
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          shape: const CircleBorder(),
+          padding: EdgeInsets.zero,
+          foregroundColor: Colors.white.withOpacity(0.4),
+          backgroundColor: Colors.white.withOpacity(0.2),
+          elevation: 10,
+          shadowColor: borderColor.withOpacity(0.8),
+          side: BorderSide(color: borderColor, width: 5),
+        ),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+          children: [
+            Image.asset(
+              text.contains('보내기')
+                  ? 'assets/giftbox_closed.png'
+                  : 'assets/giftbox_open.png',
+              width: size * 0.3,
+              height: size * 0.3,
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                height: 1.5,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.5),
+                    offset: const Offset(2, 2),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
