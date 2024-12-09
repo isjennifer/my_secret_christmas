@@ -275,14 +275,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   Positioned(
                     bottom: -10,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: Image.asset(
-                        'assets/snow_bottom.png',
-                        fit: BoxFit.cover,
+                    left: 0,
+                    right: 0,
+                    child: RepaintBoundary(
+                      child: IgnorePointer(
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: Image.asset(
+                            'assets/snow_bottom.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
