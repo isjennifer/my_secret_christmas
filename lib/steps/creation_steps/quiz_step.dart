@@ -1,8 +1,9 @@
-// lib/pages/steps/quiz_step.dart
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_secret_christmas/models/christmas_card.dart';
+import 'package:my_secret_christmas/providers/christmas_card_provider.dart';
 
-class QuizStep extends StatefulWidget {
+class QuizStep extends ConsumerStatefulWidget {
   const QuizStep({
     super.key,
     required this.onNext,
@@ -13,18 +14,42 @@ class QuizStep extends StatefulWidget {
   final VoidCallback onPrevious;
 
   @override
-  State<QuizStep> createState() => _QuizStepState();
+  ConsumerState<QuizStep> createState() => _QuizStepState();
 }
 
-class _QuizStepState extends State<QuizStep> {
-  final TextEditingController _questionController = TextEditingController();
-  final TextEditingController _answerController = TextEditingController();
+class _QuizStepState extends ConsumerState<QuizStep> {
+  late TextEditingController questionController;
+  late TextEditingController answerController;
+  late TextEditingController hint1Controller;
+  late TextEditingController hint2Controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final quiz = ref.read(christmasCardProvider).quiz;
+    questionController = TextEditingController(text: quiz?.question);
+    answerController = TextEditingController(text: quiz?.answer);
+    hint1Controller = TextEditingController(text: quiz?.hint1);
+    hint2Controller = TextEditingController(text: quiz?.hint2);
+  }
 
   @override
   void dispose() {
-    _questionController.dispose();
-    _answerController.dispose();
+    questionController.dispose();
+    answerController.dispose();
+    hint1Controller.dispose();
+    hint2Controller.dispose();
     super.dispose();
+  }
+
+  void _updateQuiz() {
+    final quiz = Quiz(
+      question: questionController.text,
+      answer: answerController.text,
+      hint1: hint1Controller.text,
+      hint2: hint2Controller.text,
+    );
+    ref.read(christmasCardProvider.notifier).updateQuiz(quiz);
   }
 
   @override
@@ -44,39 +69,43 @@ class _QuizStepState extends State<QuizStep> {
         ),
         const SizedBox(height: 20),
         TextField(
-          controller: _questionController,
+          controller: questionController,
           decoration: const InputDecoration(
             labelText: '문제를 작성해주세요.',
             border: OutlineInputBorder(),
           ),
           maxLength: 20,
+          onChanged: (_) => _updateQuiz(),
         ),
         const SizedBox(height: 16),
         TextField(
-          controller: _answerController,
+          controller: answerController,
           decoration: const InputDecoration(
             labelText: '답을 작성해주세요.',
             border: OutlineInputBorder(),
           ),
           maxLength: 10,
+          onChanged: (_) => _updateQuiz(),
         ),
         const SizedBox(height: 16),
         TextField(
-          controller: _answerController,
+          controller: hint1Controller,
           decoration: const InputDecoration(
             labelText: '첫번째 힌트를 작성해주세요.',
             border: OutlineInputBorder(),
           ),
           maxLength: 20,
+          onChanged: (_) => _updateQuiz(),
         ),
         const SizedBox(height: 16),
         TextField(
-          controller: _answerController,
+          controller: hint2Controller,
           decoration: const InputDecoration(
             labelText: '두번째 힌트를 작성해주세요.',
             border: OutlineInputBorder(),
           ),
           maxLength: 20,
+          onChanged: (_) => _updateQuiz(),
         ),
       ],
     );

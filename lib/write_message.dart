@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_secret_christmas/main.dart';
-import 'steps/message_step.dart';
-import 'steps/card_selection_step.dart';
-import 'steps/hide_message_step.dart';
-import 'steps/quiz_step.dart';
-import 'steps/send_message_step.dart';
+import 'steps/creation_steps/message_step.dart';
+import 'steps/creation_steps/card_selection_step.dart';
+import 'steps/creation_steps/hide_message_step.dart';
+import 'steps/creation_steps/quiz_step.dart';
+import 'steps/creation_steps/send_message_step.dart';
 
 class WriteMessagePage extends StatefulWidget {
   const WriteMessagePage({super.key});
@@ -22,9 +22,6 @@ class StepInfo {
 }
 
 class _WriteMessagePageState extends State<WriteMessagePage> {
-  final TextEditingController _messageController = TextEditingController();
-  final TextEditingController _toController = TextEditingController();
-  final TextEditingController _fromController = TextEditingController();
   int _currentStep = 0;
 
   // 단계 정보 리스트
@@ -112,10 +109,7 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
     switch (_currentStep) {
       case 0:
         return MessageStep(
-          onNext: () => setState(() => _currentStep++),
-          messageController: _messageController,
-          toController: _toController,
-          fromController: _fromController,
+          onNext: () => setState(() => _currentStep++)
         );
       case 1:
         return CardSelectionStep(
@@ -171,9 +165,6 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
 
   @override
   void dispose() {
-    _messageController.dispose();
-    _toController.dispose();
-    _fromController.dispose();
     super.dispose();
   }
 

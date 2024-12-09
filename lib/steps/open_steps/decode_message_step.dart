@@ -3,7 +3,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:my_secret_christmas/steps/message_reveal_step.dart';
+import 'package:my_secret_christmas/steps/open_steps/message_reveal_step.dart';
 
 class DecodeMessagePage extends StatefulWidget {
   const DecodeMessagePage({super.key});

@@ -1,7 +1,7 @@
 // lib/widgets/decode_message_modal.dart
 
 import 'package:flutter/material.dart';
-import 'package:my_secret_christmas/steps/decode_message_step.dart';
+import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
 
 class DecodeMessageModal extends StatelessWidget {
   const DecodeMessageModal({super.key});
