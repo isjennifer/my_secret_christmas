@@ -1,8 +1,10 @@
 // lib/pages/steps/card_selection_step.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_secret_christmas/providers/christmas_card_provider.dart';
 
-class CardSelectionStep extends StatefulWidget {
+class CardSelectionStep extends ConsumerStatefulWidget  {
   const CardSelectionStep({
     super.key,
     required this.onNext,
@@ -13,10 +15,10 @@ class CardSelectionStep extends StatefulWidget {
   final VoidCallback onPrevious;
 
   @override
-  State<CardSelectionStep> createState() => _CardSelectionStepState();
+  ConsumerState<CardSelectionStep> createState() => _CardSelectionStepState();
 }
 
-class _CardSelectionStepState extends State<CardSelectionStep> {
+class _CardSelectionStepState extends ConsumerState<CardSelectionStep> {
   int? selectedCardIndex;
 
   // 카드 이미지 리스트
@@ -28,6 +30,20 @@ class _CardSelectionStepState extends State<CardSelectionStep> {
     'assets/cards/card5.jpg',
     'assets/cards/card6.jpg',
   ];
+  @override
+  void initState() {
+    super.initState();
+    // 초기 상태 설정: 이미 선택된 카드가 있는 경우 해당 인덱스 설정
+    final cardImageUrl = ref.read(christmasCardProvider).cardImageUrl;
+    if (cardImageUrl != null) {
+      final index = cardImages.indexOf(cardImageUrl);
+      if (index != -1) {
+        setState(() {
+          selectedCardIndex = index;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +77,9 @@ class _CardSelectionStepState extends State<CardSelectionStep> {
                 setState(() {
                   selectedCardIndex = index;
                 });
+                // Riverpod provider를 통해 선택된 카드 이미지 업데이트
+                ref.read(christmasCardProvider.notifier)
+                   .updateCardImage(cardImages[index]);
               },
               child: Container(
                 decoration: BoxDecoration(
