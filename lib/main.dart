@@ -259,7 +259,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   ),
                   Positioned(
                     bottom: -15,
-                    left: 0,
+                    left: 10,
                     child: InkWell(
                       onTap: () {
                         Navigator.push(
@@ -280,7 +280,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     ),
                   ),
                   Positioned(
-                    bottom: 10,
+                    bottom: 0,
                     right: 0,
                     child: InkWell(
                       onTap: () {
@@ -292,8 +292,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         );
                       },
                       child: SizedBox(
-                        width: 130,
-                        height: 130,
+                        width: 140,
+                        height: 140,
                         child: Image.asset(
                           'assets/postbox.png',
                           fit: BoxFit.cover,
@@ -301,22 +301,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       ),
                     ),
                   ),
-                  Positioned(
-                    bottom: -10,
-                    left: 0,
-                    right: 0,
-                    child: RepaintBoundary(
-                      child: IgnorePointer(
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: Image.asset(
-                            'assets/snow_bottom.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+
                   // 개발 완료 후 삭제 (메시지 보낸 횟수 증가시키는 버튼)
                   Positioned(
                     top: 10,
@@ -328,6 +313,23 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         icon: Icon(Icons.add_card_outlined)),
                   ),
                 ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -10,
+            left: 0,
+            right: 0,
+            child: RepaintBoundary(
+              child: IgnorePointer(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Image.asset(
+                    'assets/snow_bottom.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
           ),
