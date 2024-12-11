@@ -34,63 +34,63 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
 
   static const List<Animal> animalList = [
     Animal(
-      name: '오리',
+      name: '덕칠이',
       imagePath: 'assets/animals/duck.jpg',
-      silhouettePath: 'assets/book.png',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 1,
     ),
     Animal(
-      name: '강아지',
-      imagePath: 'assets/images/dog.png',
-      silhouettePath: 'assets/images/dog_silhouette.png',
+      name: '뭉뭉이',
+      imagePath: 'assets/animals/dog.jpg',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 3,
     ),
     Animal(
-      name: '토끼',
-      imagePath: 'assets/images/rabbit.png',
-      silhouettePath: 'assets/images/rabbit_silhouette.png',
+      name: '깡총이',
+      imagePath: 'assets/animals/rabbit.jpg',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 6,
     ),
     Animal(
-      name: '고양이',
-      imagePath: 'assets/images/cat.png',
-      silhouettePath: 'assets/images/cat_silhouette.png',
+      name: '냥냥이',
+      imagePath: 'assets/animals/cat.jpg',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 10,
     ),
     Animal(
-      name: '펭귄',
-      imagePath: 'assets/images/penguin.png',
-      silhouettePath: 'assets/images/penguin_silhouette.png',
+      name: '뒤뚱이',
+      imagePath: 'assets/animals/penguin.jpg',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 15,
     ),
     Animal(
-      name: '곰',
-      imagePath: 'assets/images/bear.png',
-      silhouettePath: 'assets/images/bear_silhouette.png',
+      name: '꽃분이',
+      imagePath: 'assets/animals/deer.jpg',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 21,
     ),
     Animal(
-      name: '사자',
-      imagePath: 'assets/images/lion.png',
-      silhouettePath: 'assets/images/lion_silhouette.png',
+      name: '곰도리',
+      imagePath: 'assets/animals/bear.jpg',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 28,
     ),
     Animal(
-      name: '기린',
-      imagePath: 'assets/images/giraffe.png',
-      silhouettePath: 'assets/images/giraffe_silhouette.png',
+      name: '어흥이',
+      imagePath: 'assets/animals/lion.jpg',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 36,
     ),
     Animal(
-      name: '코끼리',
-      imagePath: 'assets/images/elephant.png',
-      silhouettePath: 'assets/images/elephant_silhouette.png',
+      name: '콩끼리',
+      imagePath: 'assets/animals/elephant.jpg',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 45,
     ),
     Animal(
-      name: '유니콘',
-      imagePath: 'assets/images/unicorn.png',
-      silhouettePath: 'assets/images/unicorn_silhouette.png',
+      name: '유니코니',
+      imagePath: 'assets/animals/unicorn.jpg',
+      silhouettePath: 'assets/animals/back_pattern.jpeg',
       requiredShares: 55,
     ),
   ];
@@ -226,7 +226,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
                         child: Column(
                           children: [
                             const Text(
-                              '크리스마스 메시지를 보내고',
+                              '크리스마스 메시지를 보내고,',
                               style: TextStyle(fontSize: 16),
                             ),
                             const Text(
@@ -235,7 +235,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              '보낸 횟수: ${savedShares}',
+                              '메시지 보낸 횟수: ${savedShares}',
                               style: const TextStyle(fontSize: 16),
                             ),
                           ],
@@ -282,14 +282,17 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                isUnlocked ? animal.imagePath : animal.silhouettePath,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.error);
-                },
+            child: Container(
+              margin: EdgeInsets.only(top: 15),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Image.asset(
+                  isUnlocked ? animal.imagePath : animal.silhouettePath,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.error);
+                  },
+                ),
               ),
             ),
           ),
@@ -298,22 +301,24 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
             child: Column(
               children: [
                 Text(
-                  animal.name,
+                  isUnlocked ? animal.name : '??',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
-                  '${animal.requiredShares}회 공유 필요',
+                  isUnlocked
+                      ? '${animal.requiredShares}회 공유 완료'
+                      : '${animal.requiredShares}회 공유 필요',
                   style: TextStyle(
                     fontSize: 14,
                     color: isUnlocked ? Colors.green : Colors.grey,
                   ),
                 ),
                 if (!isUnlocked) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   LinearProgressIndicator(
                     value: totalShares / animal.requiredShares,
                   ),

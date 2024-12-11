@@ -6,8 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'collection_page.dart';
+import 'package:my_secret_christmas/postbox_page.dart';
 import 'write_message.dart';
 import './widgets/snowflake.dart';
 import './widgets/snow_theme.dart';
@@ -17,12 +16,12 @@ import './widgets/audio_service.dart';
 Future<void> main() async {
   // 개발 완료 후 삭제 (디버그 모드에서만 실행)
   // 앱 시작시 보낸 횟수 초기화
-  WidgetsFlutterBinding.ensureInitialized();
-  if (kDebugMode) {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-  }
-  ;
+  // WidgetsFlutterBinding.ensureInitialized();
+  // if (kDebugMode) {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.clear();
+  // }
+  // ;
 
   runApp(
     // 최상위 위젯을 ProviderScope로 감싸기
@@ -284,9 +283,13 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     bottom: 10,
                     right: 0,
                     child: InkWell(
-                      onTap: () async {
-                        // 클릭 시 실행될 로직
-                        await CollectionPage.incrementCount();
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PostboxPage(),
+                          ),
+                        );
                       },
                       child: SizedBox(
                         width: 130,
@@ -313,6 +316,16 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         ),
                       ),
                     ),
+                  ),
+                  // 개발 완료 후 삭제 (메시지 보낸 횟수 증가시키는 버튼)
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: IconButton(
+                        onPressed: () async {
+                          await CollectionPage.incrementCount();
+                        },
+                        icon: Icon(Icons.add_card_outlined)),
                   ),
                 ],
               ),
