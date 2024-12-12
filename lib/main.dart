@@ -1,16 +1,28 @@
 //main.dart 페이지
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_secret_christmas/collection_page.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
+import 'package:my_secret_christmas/postbox_page.dart';
 import 'write_message.dart';
 import './widgets/snowflake.dart';
 import './widgets/snow_theme.dart';
 import './widgets/snow_wrapper.dart';
 import './widgets/audio_service.dart';
 
-void main() {
+Future<void> main() async {
+  // 개발 완료 후 삭제 (디버그 모드에서만 실행)
+  // 앱 시작시 보낸 횟수 초기화
+  // WidgetsFlutterBinding.ensureInitialized();
+  // if (kDebugMode) {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.clear();
+  // }
+  // ;
+
   runApp(
     // 최상위 위젯을 ProviderScope로 감싸기
     const ProviderScope(
@@ -151,16 +163,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     // 화면의 사용 가능한 높이를 계산 (상태바 등 제외)
@@ -247,10 +259,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   Positioned(
                     bottom: -15,
-                    left: 0,
+                    left: 10,
                     child: InkWell(
                       onTap: () {
-                        // 클릭 시 실행될 로직
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CollectionPage(),
+                          ),
+                        );
                       },
                       child: SizedBox(
                         width: 130,
@@ -263,15 +280,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   Positioned(
-                    bottom: 10,
+                    bottom: 0,
                     right: 0,
                     child: InkWell(
                       onTap: () {
-                        // 클릭 시 실행될 로직
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PostboxPage(),
+                          ),
+                        );
                       },
                       child: SizedBox(
-                        width: 130,
-                        height: 130,
+                        width: 140,
+                        height: 140,
                         child: Image.asset(
                           'assets/postbox.png',
                           fit: BoxFit.cover,
@@ -279,23 +301,35 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
+
+                  // 개발 완료 후 삭제 (메시지 보낸 횟수 증가시키는 버튼)
                   Positioned(
-                    bottom: -10,
-                    left: 0,
-                    right: 0,
-                    child: RepaintBoundary(
-                      child: IgnorePointer(
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: Image.asset(
-                            'assets/snow_bottom.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
+                    top: 10,
+                    left: 10,
+                    child: IconButton(
+                        onPressed: () async {
+                          await CollectionPage.incrementCount();
+                        },
+                        icon: Icon(Icons.add_card_outlined)),
                   ),
                 ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -10,
+            left: 0,
+            right: 0,
+            child: RepaintBoundary(
+              child: IgnorePointer(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Image.asset(
+                    'assets/snow_bottom.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
           ),

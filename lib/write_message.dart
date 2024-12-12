@@ -108,9 +108,7 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
   Widget _buildCurrentStepContent() {
     switch (_currentStep) {
       case 0:
-        return MessageStep(
-          onNext: () => setState(() => _currentStep++)
-        );
+        return MessageStep(onNext: () => setState(() => _currentStep++));
       case 1:
         return CardSelectionStep(
           onNext: () => setState(() => _currentStep++),
@@ -139,130 +137,147 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
     }
   }
 
-  Widget _buildCardSelectionStep() {
-    return const Center(
-      child: Text('카드 선택 단계 - 구현 예정'),
-    );
-  }
-
-  Widget _buildHideMessageStep() {
-    return const Center(
-      child: Text('메시지 숨기기 단계 - 구현 예정'),
-    );
-  }
-
-  Widget _buildQuizStep() {
-    return const Center(
-      child: Text('퀴즈 작성 단계 - 구현 예정'),
-    );
-  }
-
-  Widget _buildSendMessageStep() {
-    return const Center(
-      child: Text('메시지 전송 단계 - 구현 예정'),
-    );
-  }
-
   @override
   void dispose() {
     super.dispose();
   }
 
+  Future<bool> _showExitDialog(BuildContext context) async {
+    return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: const Text(
+              '현재 작성된 메시지가 모두 사라집니다. 그래도 뒤로 가시겠습니까?',
+              style: TextStyle(fontSize: 18),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('아니오'),
+              ),
+              TextButton(
+                onPressed: () =>
+                    Navigator.of(context).pop(true) //이 뒤에 기억된 메시지 없애는 로직 작성
+                ,
+                child: const Text('예'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('시크릿 메시지 보내기'),
-        backgroundColor: Colors.red.withOpacity(0.8),
-        foregroundColor: Colors.white,
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/home_image.jpeg'),
-            fit: BoxFit.cover,
-          ),
+    return PopScope(
+      canPop: false, // 기본적으로 뒤로가기 비활성화
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
+
+        // 사용자에게 다이얼로그 표시
+        final bool shouldPop = await _showExitDialog(context);
+        if (shouldPop) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('시크릿 메시지 보내기'),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          foregroundColor: Colors.white,
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                color: Colors.white.withOpacity(0.9),
-                child: _buildStepIndicator(),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Card(
-                      color: Colors.white.withOpacity(0.9),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _buildCurrentStepContent(),
-                            const SizedBox(height: 24),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                if (_currentStep > 0)
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/home_image.jpeg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
+              children: [
+                Container(
+                  color: Colors.white.withOpacity(0.9),
+                  child: _buildStepIndicator(),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Card(
+                        color: Colors.white.withOpacity(0.9),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _buildCurrentStepContent(),
+                              const SizedBox(height: 24),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  if (_currentStep > 0)
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _currentStep--;
+                                        });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      child: const Text('이전'),
+                                    ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      setState(() {
-                                        _currentStep--;
-                                      });
+                                      if (_currentStep < 4) {
+                                        setState(() {
+                                          _currentStep++;
+                                        });
+                                      } else {
+                                        // 메시지 전송 로직 구현
+                                        print('메시지 전송');
+                                        _currentStep < 4
+                                            ? Navigator.pop(context)
+                                            : Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const MyHomePage(
+                                                          title: ''),
+                                                ));
+                                        ;
+                                      }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.grey,
+                                      backgroundColor: Colors.red,
                                       foregroundColor: Colors.white,
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 24,
                                         vertical: 12,
                                       ),
                                     ),
-                                    child: const Text('이전'),
+                                    child: Text(_currentStep < 4 ? '다음' : '완료'),
                                   ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    if (_currentStep < 4) {
-                                      setState(() {
-                                        _currentStep++;
-                                      });
-                                    } else {
-                                      // 메시지 전송 로직 구현
-                                      print('메시지 전송');
-                                      _currentStep < 4
-                                          ? Navigator.pop(context)
-                                          : Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const MyHomePage(title: ''),
-                                              ));
-                                      ;
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 12,
-                                    ),
-                                  ),
-                                  child: Text(_currentStep < 4 ? '다음' : '완료'),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
