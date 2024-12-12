@@ -53,7 +53,7 @@ class _HideMessageStepState extends State<HideMessageStep> {
           ),
           const SizedBox(height: 24),
           const Text(
-            '메시지 숨기는 중...',
+            '카드에 메시지 숨기는 중...',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -85,7 +85,7 @@ class _HideMessageStepState extends State<HideMessageStep> {
           ),
           const SizedBox(height: 24),
           const Text(
-            '메시지 숨기기 완료!',
+            '카드에 메시지 숨기기 완료!',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
