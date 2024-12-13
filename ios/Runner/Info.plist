@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>My Secret Christmas</string>
+	<string>시크릿스마스</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -49,5 +49,40 @@
 	<array>
 		<string>audio</string>
 	</array>
+
+
+	<key>CFBundleURLTypes</key>
+	<array>
+	<dict>
+	<key>CFBundleURLSchemes</key>
+	<array>
+		<string>fb4724835711075959</string>
+	</array>
+	</dict>
+	</array>
+	<key>FacebookAppID</key>
+	<string>4724835711075959</string>
+	<key>FacebookClientToken</key>
+	<string>01a3e07a36871e1321cd6524ac6e7757</string>
+	<key>FacebookDisplayName</key>
+	<string>merry secret christmas</string>
+
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+	<string>instagram-stories</string>
+	<string>facebook-stories</string>
+	<string>facebook</string>
+	<string>instagram</string>
+	<string>twitter</string>
+	<string>whatsapp</string>
+    <string>tg</string>
+	<string>fbapi</string>
+  	<string>fb-messenger-share-api</string>
+	</array>
+
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<true/>
 </dict>
 </plist>
