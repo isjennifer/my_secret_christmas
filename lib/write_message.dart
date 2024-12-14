@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_secret_christmas/main.dart';
+import 'package:my_secret_christmas/models/christmas_card.dart';
+import 'package:my_secret_christmas/providers/christmas_card_provider.dart';
 import 'steps/creation_steps/message_step.dart';
 import 'steps/creation_steps/card_selection_step.dart';
 import 'steps/creation_steps/hide_message_step.dart';
 import 'steps/creation_steps/quiz_step.dart';
 import 'steps/creation_steps/send_message_step.dart';
 
-class WriteMessagePage extends StatefulWidget {
+class WriteMessagePage extends ConsumerStatefulWidget {
   const WriteMessagePage({super.key});
 
   @override
-  State<WriteMessagePage> createState() => _WriteMessagePageState();
+  ConsumerState<WriteMessagePage> createState() => _WriteMessagePageState();
 }
 
 class StepInfo {
@@ -21,7 +24,7 @@ class StepInfo {
   StepInfo(this.title, this.colorIconPath, this.grayIconPath);
 }
 
-class _WriteMessagePageState extends State<WriteMessagePage> {
+class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
   int _currentStep = 0;
 
   // 단계 정보 리스트
@@ -137,6 +140,85 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
     }
   }
 
+  // 첫 번째 스텝 유효성 검사
+  bool _validateFirstStep(ChristmasCard cardState, BuildContext context) {
+    if (cardState.sender?.isEmpty ?? true) {
+      _showSnackBar(context, '보내는 사람을 입력해주세요');
+      return false;
+    }
+    if (cardState.content?.isEmpty ?? true) {
+      _showSnackBar(context, '메시지 내용을 입력해주세요');
+      return false;
+    }
+    if (cardState.recipient?.isEmpty ?? true) {
+      _showSnackBar(context, '받는 사람을 입력해주세요');
+      return false;
+    }
+    return true;
+  }
+
+// 두 번째 스텝 유효성 검사
+  bool _validateSecondStep(ChristmasCard cardState, BuildContext context) {
+    if (cardState.cardImageUrl?.isEmpty ?? true) {
+      _showSnackBar(context, '카드를 선택해주세요');
+      return false;
+    }
+    return true;
+  }
+
+// 네 번째 스텝 유효성 검사
+  bool _validateFourthStep(ChristmasCard cardState, BuildContext context) {
+    if (cardState.quiz?.question?.isEmpty ?? true) {
+      _showSnackBar(context, '문제를 입력해주세요');
+      return false;
+    }
+    if (cardState.quiz?.answer?.isEmpty ?? true) {
+      _showSnackBar(context, '답을 입력해주세요');
+      return false;
+    }
+    if (cardState.quiz?.hint1?.isEmpty ?? true) {
+      _showSnackBar(context, '첫번째 힌트를 입력해주세요');
+      return false;
+    }
+    if (cardState.quiz?.hint2?.isEmpty ?? true) {
+      _showSnackBar(context, '두번째 힌트를 입력해주세요');
+      return false;
+    }
+    return true;
+  }
+
+// 다음 스텝으로 이동
+  void _moveToNextStep() {
+    if (_currentStep < 4) {
+      setState(() {
+        _currentStep++;
+      });
+    }
+  }
+
+// 스낵바 표시 헬퍼 메서드
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+// 제출 처리
+  void _handleSubmission(BuildContext context) {
+    print('메시지 전송');
+    if (_currentStep < 4) {
+      Navigator.pop(context);
+    } else {
+      ref.read(christmasCardProvider.notifier).resetCard();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MyHomePage(title: ''),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -156,9 +238,10 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
                 child: const Text('아니오'),
               ),
               TextButton(
-                onPressed: () =>
-                    Navigator.of(context).pop(true) //이 뒤에 기억된 메시지 없애는 로직 작성
-                ,
+                onPressed: () {
+                  ref.read(christmasCardProvider.notifier).resetCard();
+                  Navigator.of(context).pop(true);
+                },
                 child: const Text('예'),
               ),
             ],
@@ -238,23 +321,35 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
                                     ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      if (_currentStep < 4) {
-                                        setState(() {
-                                          _currentStep++;
-                                        });
-                                      } else {
-                                        // 메시지 전송 로직 구현
-                                        print('메시지 전송');
-                                        _currentStep < 4
-                                            ? Navigator.pop(context)
-                                            : Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const MyHomePage(
-                                                          title: ''),
-                                                ));
-                                        ;
+                                      final cardState =
+                                          ref.read(christmasCardProvider);
+
+                                      // 스텝별 유효성 검사 및 처리
+                                      switch (_currentStep) {
+                                        case 0:
+                                          if (!_validateFirstStep(
+                                              cardState, context)) return;
+                                          _moveToNextStep();
+                                          break;
+
+                                        case 1:
+                                          if (!_validateSecondStep(
+                                              cardState, context)) return;
+                                          _moveToNextStep();
+                                          break;
+
+                                        case 2:
+                                          _moveToNextStep();
+                                          break;
+
+                                        case 3:
+                                          if (!_validateFourthStep(
+                                              cardState, context)) return;
+                                          _moveToNextStep();
+                                          break;
+
+                                        default:
+                                          _handleSubmission(context);
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
