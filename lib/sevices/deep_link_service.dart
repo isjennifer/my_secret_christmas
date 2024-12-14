@@ -65,19 +65,6 @@ class DeepLinkHandler {
     required String description,
   }) async {
     try {
-// 친구 피커 실행
-      final pickerResult = await PickerApi.instance.selectFriends(
-        params: PickerFriendRequestParams(
-          title: '친구 선택',
-          enableSearch: true,
-          showMyProfile: false,
-          showFavorite: true,
-          showPickedFriend: true,
-          maxPickableCount: 10, // 최대 선택 가능한 친구 수
-          minPickableCount: 1, // 최소 선택 가능한 친구 수
-        ),
-      );
-
       final template = FeedTemplate(
         content: Content(
           title: title,
@@ -99,10 +86,8 @@ class DeepLinkHandler {
         ],
       );
 
-      // 선택된 채팅방에 메시지 전송
-      for (final chat in pickerResult.chats!) {
-        await ShareClient.instance.shareDefault(template: template);
-      }
+      await ShareClient.instance.shareDefault(template: template);
+
       print('카카오톡 공유 완료');
     } catch (error) {
       print('카카오톡 공유 실패: $error');
