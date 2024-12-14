@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_secret_christmas/collection_page.dart';
 import 'dart:io';
 import 'package:social_share/social_share.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SendMessageStep extends StatefulWidget {
   const SendMessageStep({
@@ -63,6 +65,46 @@ class _SendMessageStepState extends State<SendMessageStep>
     File file = await File(assetPath).create();
     await file.writeAsBytes(bytes.buffer.asUint8List());
     return file.path;
+  }
+
+  void shareToInstagram() async {
+    final apps = await SocialShare.checkInstalledAppsForShare();
+
+    if (apps?['instagram'] == true) {
+      // Instagram이 설치되어 있을 때만 공유 시도
+      await SocialShare.shareInstagramStory(
+          appId: facebookappId,
+          imagePath: imageBackgroundPath,
+          backgroundTopColor: "#ffffff",
+          backgroundBottomColor: "#000000",
+          backgroundResourcePath: "",
+          attributionURL: "https://deep-link-url");
+      await CollectionPage.incrementCount();
+    } else {
+      // Instagram이 설치되어 있지 않을 때의 처리
+      // 예: 사용자에게 알림을 보여주거나 스토어로 이동
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('알림'),
+          content: Text('Instagram 앱이 설치되어 있지 않습니다. 앱을 설치하시겠습니까?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                //  App Store로 이동하는 로직
+                launchUrl(Uri.parse(
+                    'https://apps.apple.com/app/instagram/id389801252'));
+              },
+              child: Text('설치하기'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -147,10 +189,10 @@ class _SendMessageStepState extends State<SendMessageStep>
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.mode_comment,
-                      size: 24,
-                      color: Colors.black,
+                    Image(
+                      image: AssetImage('assets/kakao.png'),
+                      width: 26,
+                      height: 26,
                     ),
                     SizedBox(width: 8),
                     Text(
@@ -165,44 +207,8 @@ class _SendMessageStepState extends State<SendMessageStep>
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () async {
-                  // 인스타그램 스토리 공유 로직
-                  // try {
-                  //       // 파라미터가 null이 아니고 유효한지 확인
-                  //       if (facebookappId != null && facebookappId.isNotEmpty && url != null && Uri.tryParse(url) != null) {
-                  //         await SocialShare.shareInstagramStory(
-                  //           appId: facebookappId,
-                  //     imagePath:
-                  //         "",
-                  //     backgroundTopColor: "#ffffff",
-                  //     backgroundBottomColor: "#000000",
-                  //     backgroundResourcePath: "",
-                  //     attributionURL: "https://deep-link-url"
-                  //         );
-                  //       } else {
-                  //         print("Invalid parameters for sharing");
-                  //       }
-                  //     } catch (e) {
-                  //       print('Social share error: $e');
-                  //     }
-                  try {
-                    print('코드 앞');
-
-                    await SocialShare.shareInstagramStory(
-                        appId: facebookappId, // Facebook 개발자 콘솔에서 받은 실제 App ID
-                        imagePath: imageBackgroundPath,
-                        backgroundTopColor: "#ffffff",
-                        backgroundBottomColor: "#000000",
-                        backgroundResourcePath: "",
-                        attributionURL: "https://deep-link-url");
-
-                    print('코드 뒤');
-                  } catch (e) {
-                    print('Instagram 공유 중 오류 발생: $e');
-                  }
-                  SocialShare.checkInstalledAppsForShare().then((data) {
-                    print(data.toString());
-                  });
+                onPressed: () {
+                  shareToInstagram();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE4405F),
@@ -218,10 +224,10 @@ class _SendMessageStepState extends State<SendMessageStep>
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.camera_alt,
-                      size: 24,
-                      color: Colors.white,
+                    Image(
+                      image: AssetImage('assets/instagram.png'),
+                      width: 26,
+                      height: 26,
                     ),
                     SizedBox(width: 8),
                     Text(
