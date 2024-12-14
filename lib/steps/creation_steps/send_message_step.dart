@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_secret_christmas/sevices/deep_link_service.dart';
 import 'dart:io';
 import 'package:social_share/social_share.dart';
 import 'package:path_provider/path_provider.dart';
@@ -132,6 +133,10 @@ class _SendMessageStepState extends State<SendMessageStep>
               ElevatedButton(
                 onPressed: () {
                   // 카카오톡 공유 로직
+                  DeepLinkHandler().shareToKakao(
+                    title: '크리스마스 시크릿 메시지가 도착했어요!',
+                    description: '지금 바로 확인해보세요!',
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFE812),

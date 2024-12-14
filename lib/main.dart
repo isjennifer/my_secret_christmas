@@ -4,9 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
 import 'package:my_secret_christmas/postbox_page.dart';
+import 'package:my_secret_christmas/sevices/deep_link_service.dart';
 import 'write_message.dart';
 import './widgets/snowflake.dart';
 import './widgets/snow_theme.dart';
@@ -22,6 +24,15 @@ Future<void> main() async {
   //   await prefs.clear();
   // }
   // ;
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // KakaoSdk 초기화
+  KakaoSdk.init(
+    nativeAppKey: 'decf946daaaa80724532096b84f512cb',
+  );
+
+  // 딥링크 핸들러 초기화
+  await DeepLinkHandler().initUniLinks();
 
   runApp(
     // 최상위 위젯을 ProviderScope로 감싸기
@@ -75,8 +86,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    _audioService.stop();
     _audioService.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
