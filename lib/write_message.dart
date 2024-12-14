@@ -146,9 +146,9 @@ class _WriteMessagePageState extends State<WriteMessagePage> {
     return await showDialog(
           context: context,
           builder: (context) => AlertDialog(
+            title: Text('알림'),
             content: const Text(
-              '현재 작성된 메시지가 모두 사라집니다. 그래도 뒤로 가시겠습니까?',
-              style: TextStyle(fontSize: 18),
+              '현재 작성된 메시지가 모두 사라집니다. 뒤로 가시겠습니까?',
             ),
             actions: [
               TextButton(
