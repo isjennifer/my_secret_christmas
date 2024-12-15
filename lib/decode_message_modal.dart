@@ -77,10 +77,10 @@ class DecodeMessageModal extends StatelessWidget {
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.mode_comment,
-                                size: 24,
-                                color: Colors.black,
+                              Image(
+                                image: AssetImage('assets/kakao.png'),
+                                width: 26,
+                                height: 26,
                               ),
                               SizedBox(width: 8),
                               Text(
@@ -112,10 +112,10 @@ class DecodeMessageModal extends StatelessWidget {
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.camera_alt,
-                                size: 24,
-                                color: Colors.white,
+                              Image(
+                                image: AssetImage('assets/instagram.png'),
+                                width: 26,
+                                height: 26,
                               ),
                               SizedBox(width: 8),
                               Text(
