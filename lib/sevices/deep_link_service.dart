@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:my_secret_christmas/main.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:my_secret_christmas/collection_page.dart';
 
 class DeepLinkHandler {
   static final DeepLinkHandler _instance = DeepLinkHandler._internal();
@@ -78,26 +78,17 @@ class DeepLinkHandler {
         try {
           final decodedBytes = base64Decode(cardData);
           final decodedJson = utf8.decode(decodedBytes);
-          final cardDataMap = jsonDecode(decodedJson);
+          final Map<String, dynamic> cardDataMap = jsonDecode(decodedJson);
           print('디코딩된 카드 데이터: $cardDataMap');
+          // Map을 ChristmasCard 객체로 변환
+          final ChristmasCard christmasCard = ChristmasCard.fromJson(cardDataMap);
 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            navigatorKey.currentState?.push(
-              MaterialPageRoute(
-                // builder: (context) => DecodeMessagePage(cardData: cardDataMap),
-                // builder: (context) => DecodeMessagePage(),
-                builder: (context) =>
-                    MyHomePage(title: 'Merry Secret Christmas'),
-              ),
-            );
-          });
+          _navigateToDecodePage(christmasCard);
         } catch (e) {
           print('카드 데이터 디코딩 에러: $e');
-          _navigateToDecodePage();
         }
       } else {
         print('카드 데이터 없음');
-        _navigateToDecodePage();
       }
     }
   }
@@ -111,10 +102,9 @@ class DeepLinkHandler {
       // iOS용 URL 스킴 설정
       // URL 생성 시 인코딩된 데이터 포함
       final deepLinkUrl = Uri(
-        scheme: scheme,
-        host: host,
-        queryParameters: {'cardData': encodedCard}
-      ).toString();
+          scheme: scheme,
+          host: host,
+          queryParameters: {'cardData': encodedCard}).toString();
       print('생성된 딥링크 URL: $deepLinkUrl');
 
       final template = FeedTemplate(
@@ -154,6 +144,9 @@ class DeepLinkHandler {
         print('카카오톡으로 공유 가능');
         Uri uri = await ShareClient.instance.shareDefault(template: template);
         await ShareClient.instance.launchKakaoTalk(uri);
+
+        // 공유횟수 증가
+        await CollectionPage.incrementCount();
         print('카카오톡 공유 완료!');
       } else {
         print('카카오톡 미설치: 웹 공유 기능 사용 권장');
@@ -163,11 +156,11 @@ class DeepLinkHandler {
     }
   }
 
-  void _navigateToDecodePage() {
+  void _navigateToDecodePage(ChristmasCard cardData) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       navigatorKey.currentState?.push(
         MaterialPageRoute(
-          builder: (context) => const DecodeMessagePage(),
+          builder: (context) => DecodeMessagePage(cardData: cardData),
         ),
       );
     });

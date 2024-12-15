@@ -5,9 +5,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:my_secret_christmas/classes/message_preference.dart';
 import 'package:my_secret_christmas/steps/open_steps/message_reveal_step.dart';
+import 'package:my_secret_christmas/models/christmas_card.dart';
 
 class DecodeMessagePage extends StatefulWidget {
-  const DecodeMessagePage({super.key});
+  // final 키워드를 사용하여 불변 변수로 선언
+  final ChristmasCard cardData;
+
+  const DecodeMessagePage({super.key, required this.cardData});
 
   @override
   State<DecodeMessagePage> createState() => _DecodeMessagePageState();
@@ -26,6 +30,21 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
   String quiz_hint1 = '';
   String quiz_hint2 = '';
   String quiz_answer = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // cardData에서 데이터 초기화
+    setState(() {
+      sender = widget.cardData.sender ?? '';
+      content = widget.cardData.content ?? '';
+      recipient = widget.cardData.recipient ?? '';
+      quiz_question = widget.cardData.quiz?.question ?? '';
+      quiz_hint1 = widget.cardData.quiz?.hint1 ?? '';
+      quiz_hint2 = widget.cardData.quiz?.hint2 ?? '';
+      quiz_answer = widget.cardData.quiz?.answer ?? '';
+    });
+  }
 
   @override
   void dispose() {
