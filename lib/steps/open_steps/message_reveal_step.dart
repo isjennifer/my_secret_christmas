@@ -16,6 +16,10 @@ class _MessageRevealPageState extends State<MessageRevealPage>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation_img;
   late Animation<double> _fadeAnimation_message;
+  String cardImageUrl = '';
+  String sender = '';
+  String content = '';
+  String recipient = '';
 
   @override
   void initState() {
@@ -56,9 +60,9 @@ class _MessageRevealPageState extends State<MessageRevealPage>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/cards/card1.jpg'),
+            image: AssetImage(cardImageUrl),
             fit: BoxFit.cover,
           ),
         ),
@@ -116,7 +120,7 @@ class _MessageRevealPageState extends State<MessageRevealPage>
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: Image.asset(
-                                        'assets/cards/card1.jpg',
+                                        cardImageUrl,
                                         height: 500,
                                         width: double.infinity,
                                         fit: BoxFit.cover,
@@ -136,12 +140,12 @@ class _MessageRevealPageState extends State<MessageRevealPage>
                                       width: double.infinity,
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20),
-                                      child: const Column(
+                                      child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            '메시지 내용이 여기에\n표시됩니다.',
+                                            '$sender\n$content\n$recipient',
                                             style: TextStyle(
                                               fontSize: 18,
                                               height: 1.5,
