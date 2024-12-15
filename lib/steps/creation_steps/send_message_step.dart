@@ -31,7 +31,7 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
   int activeArrowIndex = 0;
   String facebookappId = '4724835711075959';
 
-  var imageBackground = "home_image.jpeg";
+  var imageBackground = "insta_story_image.png";
   // var videoBackground = "video-background.mp4";
   String imageBackgroundPath = "";
   // String videoBackgroundPath = "";
@@ -78,10 +78,10 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
       await SocialShare.shareInstagramStory(
           appId: facebookappId,
           imagePath: imageBackgroundPath,
-          backgroundTopColor: "#ffffff",
-          backgroundBottomColor: "#000000",
+          backgroundTopColor: "#06591E",
+          backgroundBottomColor: "#BF1011",
           backgroundResourcePath: "",
-          attributionURL: "https://deep-link-url");
+          attributionURL: "");
       await CollectionPage.incrementCount();
     } else {
       // Instagram이 설치되어 있지 않을 때의 처리
@@ -171,7 +171,8 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
         const SizedBox(height: 40),
         const Text(
           '⚠️ 본 앱은 현재 Android 버전을 지원하지 않습니다.\n🍎 iOS 사용자에게만 공유해주세요!',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
@@ -218,8 +219,66 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () {
-                  shareToInstagram();
+                onPressed: () async {
+                  try {
+                    // 카드 데이터 읽기
+                    final cardData = ref.read(christmasCardProvider);
+
+                    // 딥링크 URL 생성
+                    final url =
+                        DeepLinkHandler().createDeepLinkUrl(card: cardData);
+
+                    // 클립보드에 복사
+                    await Clipboard.setData(ClipboardData(text: url));
+
+                    // 복사 성공 시 모달 표시
+                    if (context.mounted) {
+                      await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('링크 복사 완료'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('링크가 클립보드에 복사되었습니다.'),
+                                SizedBox(height: 8),
+                                Text('인스타그램 스토리 작성시, 링크 스티커를 이용해 붙여넣어주세요.')
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  shareToInstagram(); // 모달이 닫힌 후 인스타그램 공유 실행
+                                },
+                                child: Text('확인'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  } catch (e) {
+                    // 에러 처리
+                    if (context.mounted) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('오류'),
+                            content: Text('링크 복사 중 문제가 발생했습니다.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: Text('확인'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE4405F),
