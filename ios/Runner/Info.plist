@@ -50,16 +50,6 @@
 		<string>audio</string>
 	</array>
 
-
-	<key>CFBundleURLTypes</key>
-	<array>
-	<dict>
-	<key>CFBundleURLSchemes</key>
-	<array>
-		<string>fb4724835711075959</string>
-	</array>
-	</dict>
-	</array>
 	<key>FacebookAppID</key>
 	<string>4724835711075959</string>
 	<key>FacebookClientToken</key>
@@ -69,15 +59,35 @@
 
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-	<string>instagram-stories</string>
-	<string>facebook-stories</string>
-	<string>facebook</string>
-	<string>instagram</string>
-	<string>twitter</string>
-	<string>whatsapp</string>
-    <string>tg</string>
-	<string>fbapi</string>
-  	<string>fb-messenger-share-api</string>
+		<string>instagram-stories</string>
+		<string>facebook-stories</string>
+		<string>facebook</string>
+		<string>instagram</string>
+		<string>twitter</string>
+		<string>whatsapp</string>
+		<string>tg</string>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>kakaokompassauth</string>
+		<string>kakaolink</string>
+	</array>
+
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaodecf946daaaa80724532096b84f512cb</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>myapp</string>
+			</array>
+			<key>CFBundleURLName</key>
+        <string>com.example.myapp</string>
+    </dict>
 	</array>
 
 	<key>FacebookAutoLogAppEventsEnabled</key>
