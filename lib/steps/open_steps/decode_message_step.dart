@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:my_secret_christmas/classes/message_preference.dart';
 import 'package:my_secret_christmas/steps/open_steps/message_reveal_step.dart';
 
 class DecodeMessagePage extends StatefulWidget {
@@ -19,6 +20,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
   int _attemptCount = 0;
   bool _showAnswer = false;
   String sender = '';
+  String content = '';
   String recipient = '';
   String quiz_question = '';
   String quiz_hint1 = '';
@@ -29,6 +31,15 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
   void dispose() {
     _answerController.dispose();
     super.dispose();
+  }
+
+  // 메시지 데이터 preference에 저장하기
+  void saveMessage() async {
+    await MessagePreferences.addMessage(
+      sender: sender,
+      content: content,
+      recipient: recipient,
+    );
   }
 
   @override
@@ -275,11 +286,15 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                     });
 
                                     if (isCorrect) {
+                                      saveMessage();
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const MessageRevealPage()),
+                                                MessageRevealPage(
+                                                    sender: sender,
+                                                    content: content,
+                                                    recipient: recipient)),
                                       );
                                     } else {
                                       // 오답일 경우 사용자에게 피드백 제공
