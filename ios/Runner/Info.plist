@@ -80,6 +80,14 @@
 				<string>kakaodecf946daaaa80724532096b84f512cb</string>
 			</array>
 		</dict>
+		<dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>myapp</string>
+        </array>
+        <key>CFBundleURLName</key>
+        <string>com.example.myapp</string>
+    </dict>
 	</array>
 
 	<key>FacebookAutoLogAppEventsEnabled</key>

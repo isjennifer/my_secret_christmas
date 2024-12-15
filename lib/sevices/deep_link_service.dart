@@ -50,6 +50,8 @@ class DeepLinkHandler {
       final path = uri.queryParameters['path'];
       print('Path 파라미터: $path'); // 디버깅용
 
+      final String? encodedCard = uri.queryParameters['cardData'];
+
       switch (path) {
         case 'decode':
           _navigateToDecodePage();
