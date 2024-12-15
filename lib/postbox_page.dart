@@ -1,33 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:my_secret_christmas/classes/message_preference.dart';
 import 'package:my_secret_christmas/steps/open_steps/message_reveal_step.dart';
 
-class Message {
-  final String sender;
-  final String content;
-  final String recipient;
-
-  Message({
-    required this.sender,
-    required this.content,
-    required this.recipient,
-  });
-}
-
-class PostboxPage extends StatelessWidget {
+class PostboxPage extends StatefulWidget {
   const PostboxPage({Key? key}) : super(key: key);
 
-  List<Message> get messages => [
-        Message(
-          sender: '보내는 사람',
-          content: '환영합니다!',
-          recipient: '받는 사람',
-        ),
-        Message(
-          sender: '갑돌이',
-          content: '안녕?',
-          recipient: '갑순이',
-        ),
-      ];
+  @override
+  State<PostboxPage> createState() => _PostboxPageState();
+}
+
+class _PostboxPageState extends State<PostboxPage> {
+  List<Message> messages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMessages();
+  }
+
+  Future<void> _loadMessages() async {
+    final loadedMessages = await MessagePreferences.loadMessages();
+    setState(() {
+      messages = loadedMessages;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +60,11 @@ class PostboxPage extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MessageRevealPage(),
+                      builder: (context) => MessageRevealPage(
+                        sender: message.sender,
+                        content: message.content,
+                        recipient: message.recipient,
+                      ),
                     ),
                   ),
                   child: Container(

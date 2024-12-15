@@ -3,10 +3,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:my_secret_christmas/classes/message_preference.dart';
 import 'package:my_secret_christmas/steps/open_steps/message_reveal_step.dart';
+import 'package:my_secret_christmas/models/christmas_card.dart';
 
 class DecodeMessagePage extends StatefulWidget {
-  const DecodeMessagePage({super.key});
+  // final 키워드를 사용하여 불변 변수로 선언
+  final ChristmasCard cardData;
+
+  const DecodeMessagePage({super.key, required this.cardData});
 
   @override
   State<DecodeMessagePage> createState() => _DecodeMessagePageState();
@@ -14,15 +19,46 @@ class DecodeMessagePage extends StatefulWidget {
 
 class _DecodeMessagePageState extends State<DecodeMessagePage> {
   final _answerController = TextEditingController();
-  static const String CORRECT_ANSWER = '정답';
+
   bool isCorrect = false;
   int _attemptCount = 0;
   bool _showAnswer = false;
+  String sender = '';
+  String content = '';
+  String recipient = '';
+  String quiz_question = '';
+  String quiz_hint1 = '';
+  String quiz_hint2 = '';
+  String quiz_answer = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // cardData에서 데이터 초기화
+    setState(() {
+      sender = widget.cardData.sender ?? '';
+      content = widget.cardData.content ?? '';
+      recipient = widget.cardData.recipient ?? '';
+      quiz_question = widget.cardData.quiz?.question ?? '';
+      quiz_hint1 = widget.cardData.quiz?.hint1 ?? '';
+      quiz_hint2 = widget.cardData.quiz?.hint2 ?? '';
+      quiz_answer = widget.cardData.quiz?.answer ?? '';
+    });
+  }
 
   @override
   void dispose() {
     _answerController.dispose();
     super.dispose();
+  }
+
+  // 메시지 데이터 preference에 저장하기
+  void saveMessage() async {
+    await MessagePreferences.addMessage(
+      sender: sender,
+      content: content,
+      recipient: recipient,
+    );
   }
 
   @override
@@ -72,7 +108,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                             children: [
                               SizedBox(height: 10),
                               Text(
-                                '(발신자)님이 크리스마스 메시지를 보냈어요!',
+                                '$sender님이 크리스마스 메시지를 보냈어요!',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -89,7 +125,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                               SizedBox(height: 10),
                               if (_attemptCount == 0 && isCorrect == false)
                                 Text(
-                                  '(발신자)가 (수신자)에게 보내는\n멋진 크리스마스 카드가 도착했어요!\n안에는 시크릿 메시지가 숨겨져있어요.\n메시지를 보려면 (발신자)가 낸 퀴즈를 맞혀야해요.\n얼른 풀어볼까요?',
+                                  '$sender님이 $recipient님에게 보내는\n멋진 크리스마스 카드가 도착했어요!\n안에는 시크릿 메시지가 숨겨져있어요.\n메시지를 보려면 $sender님이 낸 퀴즈를 맞혀야해요.\n얼른 풀어볼까요?',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -153,7 +189,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                     },
                                     child: Text(
                                       _showAnswer
-                                          ? '🎅 : 허허허! 메리크리스마스!\n정답은 "$CORRECT_ANSWER" 란다!'
+                                          ? '🎅 : 허허허! 메리크리스마스!\n정답은 "$quiz_answer" 란다!'
                                           : '📣 산타할아버지! 정답을 알려주세요!',
                                       style: TextStyle(
                                         fontSize: 18,
@@ -213,8 +249,8 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              const Text(
-                                'Q. 이 사람이 가장 좋아하는 크리스마스 캐롤은?',
+                              Text(
+                                'Q. $quiz_question',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -222,7 +258,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                               ),
                               if (_attemptCount >= 1 && isCorrect == false)
                                 Text(
-                                  'Hint1. 첫번째 힌트입니다.',
+                                  'Hint1. $quiz_hint1',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -230,7 +266,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                 ),
                               if (_attemptCount >= 2 && isCorrect == false)
                                 Text(
-                                  'Hint2. 두번째 힌트입니다.',
+                                  'Hint2. $quiz_hint2',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -265,15 +301,19 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                       _attemptCount++; // 버튼을 누를 때마다 시도 횟수 증가
                                       isCorrect =
                                           _answerController.text.trim() ==
-                                              CORRECT_ANSWER;
+                                              quiz_answer;
                                     });
 
                                     if (isCorrect) {
+                                      saveMessage();
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const MessageRevealPage()),
+                                                MessageRevealPage(
+                                                    sender: sender,
+                                                    content: content,
+                                                    recipient: recipient)),
                                       );
                                     } else {
                                       // 오답일 경우 사용자에게 피드백 제공

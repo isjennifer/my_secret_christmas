@@ -1,12 +1,13 @@
 //main.dart 페이지
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
 import 'package:my_secret_christmas/postbox_page.dart';
+import 'package:my_secret_christmas/sevices/deep_link_service.dart';
 import 'write_message.dart';
 import './widgets/snowflake.dart';
 import './widgets/snow_theme.dart';
@@ -22,18 +23,28 @@ Future<void> main() async {
   //   await prefs.clear();
   // }
   // ;
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // KakaoSdk 초기화
+  KakaoSdk.init(
+    nativeAppKey: 'decf946daaaa80724532096b84f512cb',
+  );
+
+  // 딥링크 핸들러 초기화
+  await DeepLinkHandler().initUniLinks();
 
   runApp(
     // 최상위 위젯을 ProviderScope로 감싸기
-    const ProviderScope(
-      child: MyApp(),
+    ProviderScope(
+      child: MyApp(navigatorKey: DeepLinkHandler.navigatorKey),
     ),
   );
 }
 
 // This widget is the root of your application.
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final GlobalKey<NavigatorState> navigatorKey;
+  const MyApp({super.key, required this.navigatorKey});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -41,12 +52,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final AudioService _audioService = AudioService();
+  final DeepLinkHandler _deepLinkHandler = DeepLinkHandler();
 
   @override
   void initState() {
     super.initState();
     _initBackgroundMusic();
     WidgetsBinding.instance.addObserver(this);
+
+    // 딥링크 핸들러 초기화
+    _deepLinkHandler.initUniLinks();
   }
 
   Future<void> _initBackgroundMusic() async {
@@ -67,6 +82,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         if (_audioService.isPlaying) {
           _audioService.play();
         }
+
+        // 딥링크 핸들러 재초기화
+        _deepLinkHandler.initUniLinks();
+        break;
+      case AppLifecycleState.detached:
+        // 앱이 완전히 종료될 때
+        _deepLinkHandler.dispose();
         break;
       default:
         break;
@@ -75,8 +97,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    _audioService.stop();
     _audioService.dispose();
+    _deepLinkHandler.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -85,6 +109,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return SnowTheme(
       showSnow: true, // 눈 효과 켜기/끄기 제어
       child: MaterialApp(
+        navigatorKey: widget.navigatorKey,
         title: 'Merry Secret Christmas',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(

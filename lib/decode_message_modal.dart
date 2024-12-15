@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
+import 'package:my_secret_christmas/models/christmas_card.dart';
 
 class DecodeMessageModal extends StatelessWidget {
   const DecodeMessageModal({super.key});
@@ -77,10 +78,10 @@ class DecodeMessageModal extends StatelessWidget {
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.mode_comment,
-                                size: 24,
-                                color: Colors.black,
+                              Image(
+                                image: AssetImage('assets/kakao.png'),
+                                width: 26,
+                                height: 26,
                               ),
                               SizedBox(width: 8),
                               Text(
@@ -112,10 +113,10 @@ class DecodeMessageModal extends StatelessWidget {
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.camera_alt,
-                                size: 24,
-                                color: Colors.white,
+                              Image(
+                                image: AssetImage('assets/instagram.png'),
+                                width: 26,
+                                height: 26,
                               ),
                               SizedBox(width: 8),
                               Text(
@@ -132,11 +133,28 @@ class DecodeMessageModal extends StatelessWidget {
                         const SizedBox(height: 12),
                         ElevatedButton(
                           onPressed: () {
+                            // 퀴즈 객체 생성
+                            Quiz mockQuiz = Quiz(
+                              question: '산타의 썰매를 끄는 루돌프의 코 색깔은?',
+                              answer: '빨간색',
+                              hint1: '어두운 밤길을 환하게 밝혀주는 색이에요',
+                              hint2: '신호등에서 멈춤을 의미하는 색이에요',
+                            );
+
+                            // 크리스마스 카드 객체 생성
+                            ChristmasCard mockChristmasCard = ChristmasCard(
+                              sender: '산타',
+                              content:
+                                  '올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!',
+                              recipient: '루돌프',
+                              cardImageUrl: 'assets/christmas_card.png',
+                              quiz: mockQuiz,
+                            );
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      const DecodeMessagePage()),
+                                  builder: (context) => DecodeMessagePage(
+                                      cardData: mockChristmasCard)),
                             );
                           },
                           style: ElevatedButton.styleFrom(

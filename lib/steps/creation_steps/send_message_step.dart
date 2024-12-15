@@ -1,8 +1,17 @@
 // lib/pages/steps/send_message_step.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_secret_christmas/providers/christmas_card_provider.dart';
+import 'package:my_secret_christmas/sevices/deep_link_service.dart';
+import 'package:my_secret_christmas/collection_page.dart';
+import 'dart:io';
+import 'package:social_share/social_share.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class SendMessageStep extends StatefulWidget {
+class SendMessageStep extends ConsumerStatefulWidget {
   const SendMessageStep({
     super.key,
     required this.onComplete,
@@ -13,13 +22,19 @@ class SendMessageStep extends StatefulWidget {
   final VoidCallback onPrevious;
 
   @override
-  State<SendMessageStep> createState() => _SendMessageStepState();
+  ConsumerState<SendMessageStep> createState() => _SendMessageStepState();
 }
 
-class _SendMessageStepState extends State<SendMessageStep>
+class _SendMessageStepState extends ConsumerState<SendMessageStep>
     with SingleTickerProviderStateMixin {
   AnimationController? controller;
   int activeArrowIndex = 0;
+  String facebookappId = '4724835711075959';
+
+  var imageBackground = "home_image.jpeg";
+  // var videoBackground = "video-background.mp4";
+  String imageBackgroundPath = "";
+  // String videoBackgroundPath = "";
 
   @override
   void initState() {
@@ -38,6 +53,61 @@ class _SendMessageStepState extends State<SendMessageStep>
       });
 
     controller?.forward();
+    copyBundleAssets();
+  }
+
+  Future<void> copyBundleAssets() async {
+    imageBackgroundPath = await copyImage(imageBackground);
+    // videoBackgroundPath = await copyImage(videoBackground);
+  }
+
+  Future<String> copyImage(String filename) async {
+    final tempDir = await getTemporaryDirectory();
+    ByteData bytes = await rootBundle.load("assets/$filename");
+    final assetPath = '${tempDir.path}/$filename';
+    File file = await File(assetPath).create();
+    await file.writeAsBytes(bytes.buffer.asUint8List());
+    return file.path;
+  }
+
+  void shareToInstagram() async {
+    final apps = await SocialShare.checkInstalledAppsForShare();
+
+    if (apps?['instagram'] == true) {
+      // Instagram이 설치되어 있을 때만 공유 시도
+      await SocialShare.shareInstagramStory(
+          appId: facebookappId,
+          imagePath: imageBackgroundPath,
+          backgroundTopColor: "#ffffff",
+          backgroundBottomColor: "#000000",
+          backgroundResourcePath: "",
+          attributionURL: "https://deep-link-url");
+      await CollectionPage.incrementCount();
+    } else {
+      // Instagram이 설치되어 있지 않을 때의 처리
+      // 예: 사용자에게 알림을 보여주거나 스토어로 이동
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('알림'),
+          content: Text('Instagram 앱이 설치되어 있지 않습니다. 앱을 설치하시겠습니까?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                //  App Store로 이동하는 로직
+                launchUrl(Uri.parse(
+                    'https://apps.apple.com/app/instagram/id389801252'));
+              },
+              child: Text('설치하기'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -99,6 +169,12 @@ class _SendMessageStepState extends State<SendMessageStep>
           ),
         ),
         const SizedBox(height: 40),
+        const Text(
+          '⚠️ 본 앱은 현재 Android 버전을 지원하지 않습니다.\n🍎 iOS 사용자에게만 공유해주세요!',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 10),
         // 공유 버튼들
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -107,6 +183,8 @@ class _SendMessageStepState extends State<SendMessageStep>
               ElevatedButton(
                 onPressed: () {
                   // 카카오톡 공유 로직
+                  final cardData = ref.read(christmasCardProvider);
+                  DeepLinkHandler().shareToKakao(card: cardData);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFE812),
@@ -122,10 +200,10 @@ class _SendMessageStepState extends State<SendMessageStep>
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.mode_comment,
-                      size: 24,
-                      color: Colors.black,
+                    Image(
+                      image: AssetImage('assets/kakao.png'),
+                      width: 26,
+                      height: 26,
                     ),
                     SizedBox(width: 8),
                     Text(
@@ -141,7 +219,7 @@ class _SendMessageStepState extends State<SendMessageStep>
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
-                  // 인스타그램 스토리 공유 로직
+                  shareToInstagram();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE4405F),
@@ -157,10 +235,10 @@ class _SendMessageStepState extends State<SendMessageStep>
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.camera_alt,
-                      size: 24,
-                      color: Colors.white,
+                    Image(
+                      image: AssetImage('assets/instagram.png'),
+                      width: 26,
+                      height: 26,
                     ),
                     SizedBox(width: 8),
                     Text(
