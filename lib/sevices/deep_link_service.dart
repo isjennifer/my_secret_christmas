@@ -69,7 +69,7 @@ class DeepLinkHandler {
         content: Content(
           title: title,
           description: description,
-          imageUrl: Uri.parse('이미지URL'),
+          imageUrl: Uri.parse('assets/book.png'),
           link: Link(
             androidExecutionParams: {'path': 'decode'},
             iosExecutionParams: {'path': 'decode'},
@@ -88,7 +88,7 @@ class DeepLinkHandler {
 
       await ShareClient.instance.shareDefault(template: template);
 
-      print('카카오톡 공유 완료');
+      print('카카오톡 공유 완료1');
     } catch (error) {
       print('카카오톡 공유 실패: $error');
     }
