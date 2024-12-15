@@ -86,9 +86,16 @@ class DeepLinkHandler {
         ],
       );
 
-      await ShareClient.instance.shareDefault(template: template);
+      bool isKakaoTalkSharingAvailable =
+          await ShareClient.instance.isKakaoTalkSharingAvailable();
 
-      print('카카오톡 공유 완료1');
+      if (isKakaoTalkSharingAvailable) {
+        print('카카오톡으로 공유 가능');
+        await ShareClient.instance.shareDefault(template: template);
+        print('카카오톡 공유 완료!');
+      } else {
+        print('카카오톡 미설치: 웹 공유 기능 사용 권장');
+      }
     } catch (error) {
       print('카카오톡 공유 실패: $error');
     }
