@@ -81,7 +81,8 @@ class DeepLinkHandler {
           final Map<String, dynamic> cardDataMap = jsonDecode(decodedJson);
           print('디코딩된 카드 데이터: $cardDataMap');
           // Map을 ChristmasCard 객체로 변환
-          final ChristmasCard christmasCard = ChristmasCard.fromJson(cardDataMap);
+          final ChristmasCard christmasCard =
+              ChristmasCard.fromJson(cardDataMap);
 
           _navigateToDecodePage(christmasCard);
         } catch (e) {
@@ -95,16 +96,7 @@ class DeepLinkHandler {
 
   Future<void> shareToKakao({required ChristmasCard card}) async {
     try {
-      // JSON으로 변환하고 base64로 인코딩
-      final String cardJson = jsonEncode(card.toJson());
-      final String encodedCard = base64Encode(utf8.encode(cardJson));
-
-      // iOS용 URL 스킴 설정
-      // URL 생성 시 인코딩된 데이터 포함
-      final deepLinkUrl = Uri(
-          scheme: scheme,
-          host: host,
-          queryParameters: {'cardData': encodedCard}).toString();
+      final deepLinkUrl = createDeepLinkUrl(card: card);
       print('생성된 딥링크 URL: $deepLinkUrl');
 
       final template = FeedTemplate(
@@ -123,11 +115,11 @@ class DeepLinkHandler {
             link: Link(
               androidExecutionParams: {
                 'path': 'decode',
-                'cardData': encodedCard,
+                'cardData': base64Encode(utf8.encode(jsonEncode(card.toJson()))),
               },
               iosExecutionParams: {
                 'path': 'decode',
-                'cardData': encodedCard,
+                'cardData': base64Encode(utf8.encode(jsonEncode(card.toJson()))),
               },
               // iOS Universal Link 지원
               mobileWebUrl: Uri.parse(deepLinkUrl),
@@ -153,6 +145,27 @@ class DeepLinkHandler {
       }
     } catch (error) {
       print('카카오톡 공유 실패: $error');
+    }
+  }
+
+  // 딥링크 URL 생성 메서드
+  String createDeepLinkUrl({required ChristmasCard card}) {
+    try {
+      // JSON으로 변환하고 base64로 인코딩
+      final String cardJson = jsonEncode(card.toJson());
+      final String encodedCard = base64Encode(utf8.encode(cardJson));
+
+      // URL 생성
+      final deepLinkUrl = Uri(
+          scheme: scheme,
+          host: host,
+          queryParameters: {'cardData': encodedCard}).toString();
+
+      print('생성된 딥링크 URL: $deepLinkUrl');
+      return deepLinkUrl;
+    } catch (e) {
+      print('딥링크 URL 생성 실패: $e');
+      throw Exception('딥링크 URL 생성에 실패했습니다');
     }
   }
 
