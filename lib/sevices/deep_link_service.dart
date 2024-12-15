@@ -26,14 +26,15 @@ class DeepLinkHandler {
   StreamSubscription? _linkSubscription;
 
   Future<void> initUniLinks() async {
+    print('Deep Link 초기화 시작...');
+    
     if (_isInitialized) {
       print('Deep Link가 이미 초기화되었습니다!');
-      return;
+      _linkSubscription?.cancel(); // 기존 구독 취소
+      _isInitialized = false;
     }
 
     try {
-      print('Deep Link 초기화 시작...');
-
       // 앱이 완전히 종료된 상태에서 시작될 때의 딥링크 처리
       final initialUri = await getInitialUri();
       print('Initial URI: $initialUri');
