@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -21,24 +22,40 @@ class DeepLinkHandler {
   static const String androidPackageName = 'com.example.myapp';
   static const String iOSAppStoreId = '123456789';
 
+  bool _isInitialized = false;
+  StreamSubscription? _linkSubscription;
+
   Future<void> initUniLinks() async {
+    if (_isInitialized) return;
+
     try {
       print('Deep Link 초기화 시작...');
+
+      // 앱이 완전히 종료된 상태에서 시작될 때의 딥링크 처리
       final initialUri = await getInitialUri();
       print('Initial URI: $initialUri');
       if (initialUri != null) {
         _handleLink(initialUri);
       }
 
-      uriLinkStream.listen((Uri? uri) {
+      // 스트림 구독 설정
+      _linkSubscription = uriLinkStream.listen((Uri? uri) {
         print('수신된 딥링크: $uri');
         if (uri != null) _handleLink(uri);
       }, onError: (err) {
         print('딥링크 스트림 에러: $err');
       });
+
+      _isInitialized = true;
     } catch (e) {
       print('딥링크 초기화 에러: $e');
     }
+  }
+
+  // 리소스 해제를 위한 dispose 메서드 추가
+  void dispose() {
+    _linkSubscription?.cancel();
+    _isInitialized = false;
   }
 
   void _handleLink(Uri uri) {
@@ -65,7 +82,8 @@ class DeepLinkHandler {
               MaterialPageRoute(
                 // builder: (context) => DecodeMessagePage(cardData: cardDataMap),
                 // builder: (context) => DecodeMessagePage(),
-                builder: (context) => MyHomePage(title: 'Merry Secret Christmas'),
+                builder: (context) =>
+                    MyHomePage(title: 'Merry Secret Christmas'),
               ),
             );
           });
