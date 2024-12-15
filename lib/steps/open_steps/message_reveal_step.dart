@@ -5,7 +5,16 @@ import 'package:my_secret_christmas/main.dart';
 import 'package:my_secret_christmas/write_message.dart';
 
 class MessageRevealPage extends StatefulWidget {
-  const MessageRevealPage({super.key});
+  final String sender;
+  final String content;
+  final String recipient;
+
+  const MessageRevealPage({
+    super.key,
+    required this.sender,
+    required this.content,
+    required this.recipient,
+  });
 
   @override
   State<MessageRevealPage> createState() => _MessageRevealPageState();
@@ -17,9 +26,6 @@ class _MessageRevealPageState extends State<MessageRevealPage>
   late Animation<double> _fadeAnimation_img;
   late Animation<double> _fadeAnimation_message;
   String cardImageUrl = '';
-  String sender = '';
-  String content = '';
-  String recipient = '';
 
   @override
   void initState() {
@@ -145,7 +151,7 @@ class _MessageRevealPageState extends State<MessageRevealPage>
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            '$sender\n$content\n$recipient',
+                                            '${widget.sender}\n${widget.content}\n${widget.recipient}',
                                             style: TextStyle(
                                               fontSize: 18,
                                               height: 1.5,
