@@ -94,5 +94,10 @@
 	<true/>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<true/>
+	<key>NSClipboardUsageDescription</key>
+	<string>클립보드에 링크를 복사하기 위해 권한이 필요합니다.</string>
+
+	<key>UIPasteboardFlushSaveHandlers</key>
+	<true/>
 </dict>
 </plist>
