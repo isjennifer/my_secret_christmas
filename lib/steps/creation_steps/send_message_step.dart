@@ -2,12 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_secret_christmas/providers/christmas_card_provider.dart';
 import 'package:my_secret_christmas/sevices/deep_link_service.dart';
 import 'dart:io';
 import 'package:social_share/social_share.dart';
 import 'package:path_provider/path_provider.dart';
 
-class SendMessageStep extends StatefulWidget {
+class SendMessageStep extends ConsumerStatefulWidget {
   const SendMessageStep({
     super.key,
     required this.onComplete,
@@ -18,10 +20,10 @@ class SendMessageStep extends StatefulWidget {
   final VoidCallback onPrevious;
 
   @override
-  State<SendMessageStep> createState() => _SendMessageStepState();
+  ConsumerState<SendMessageStep> createState() => _SendMessageStepState();
 }
 
-class _SendMessageStepState extends State<SendMessageStep>
+class _SendMessageStepState extends ConsumerState<SendMessageStep>
     with SingleTickerProviderStateMixin {
   AnimationController? controller;
   int activeArrowIndex = 0;
@@ -133,10 +135,8 @@ class _SendMessageStepState extends State<SendMessageStep>
               ElevatedButton(
                 onPressed: () {
                   // 카카오톡 공유 로직
-                  DeepLinkHandler().shareToKakao(
-                    title: '크리스마스 시크릿 메시지가 도착했어요!',
-                    description: '지금 바로 확인해보세요!',
-                  );
+                  final cardData = ref.read(christmasCardProvider);
+                  DeepLinkHandler().shareToKakao(card: cardData);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFE812),

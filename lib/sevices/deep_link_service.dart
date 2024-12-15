@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -71,15 +73,16 @@ class DeepLinkHandler {
     );
   }
 
-  Future<void> shareToKakao({
-    required String title,
-    required String description,
-  }) async {
+  Future<void> shareToKakao({required ChristmasCard card}) async {
     try {
+      // JSON으로 변환하고 base64로 인코딩
+      final String cardJson = jsonEncode(card.toJson());
+      final String encodedCard = base64Encode(utf8.encode(cardJson));
+
       final template = FeedTemplate(
         content: Content(
-          title: title,
-          description: description,
+          title: '크리스마스 시크릿 메시지가 도착했어요!',
+          description: '지금 바로 확인해보세요!',
           imageUrl: Uri.parse('assets/book.png'),
           link: Link(
             androidExecutionParams: {'path': 'decode'},
@@ -90,8 +93,14 @@ class DeepLinkHandler {
           Button(
             title: '메시지 확인하기',
             link: Link(
-              androidExecutionParams: {'path': 'decode'},
-              iosExecutionParams: {'path': 'decode'},
+              androidExecutionParams: {
+                'path': 'decode',
+                'cardData': encodedCard,
+              },
+              iosExecutionParams: {
+                'path': 'decode',
+                'cardData': encodedCard,
+              },
             ),
           ),
         ],

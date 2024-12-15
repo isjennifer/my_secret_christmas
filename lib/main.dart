@@ -36,15 +36,16 @@ Future<void> main() async {
 
   runApp(
     // 최상위 위젯을 ProviderScope로 감싸기
-    const ProviderScope(
-      child: MyApp(),
+    ProviderScope(
+      child: MyApp(navigatorKey: DeepLinkHandler.navigatorKey),
     ),
   );
 }
 
 // This widget is the root of your application.
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final GlobalKey<NavigatorState> navigatorKey;
+  const MyApp({super.key, required this.navigatorKey});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -97,6 +98,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return SnowTheme(
       showSnow: true, // 눈 효과 켜기/끄기 제어
       child: MaterialApp(
+        navigatorKey: widget.navigatorKey,
         title: 'Merry Secret Christmas',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
