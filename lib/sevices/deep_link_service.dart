@@ -91,7 +91,8 @@ class DeepLinkHandler {
 
       if (isKakaoTalkSharingAvailable) {
         print('카카오톡으로 공유 가능');
-        await ShareClient.instance.shareDefault(template: template);
+        Uri uri = await ShareClient.instance.shareDefault(template: template);
+        await ShareClient.instance.launchKakaoTalk(uri);
         print('카카오톡 공유 완료!');
       } else {
         print('카카오톡 미설치: 웹 공유 기능 사용 권장');
