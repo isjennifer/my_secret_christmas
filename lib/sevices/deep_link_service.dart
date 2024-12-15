@@ -27,7 +27,7 @@ class DeepLinkHandler {
 
   Future<void> initUniLinks() async {
     print('Deep Link 초기화 시작...');
-    
+
     if (_isInitialized) {
       print('Deep Link가 이미 초기화되었습니다!');
       _linkSubscription?.cancel(); // 기존 구독 취소
@@ -109,7 +109,13 @@ class DeepLinkHandler {
       final String encodedCard = base64Encode(utf8.encode(cardJson));
 
       // iOS용 URL 스킴 설정
-      final iosScheme = '$scheme://decode';
+      // URL 생성 시 인코딩된 데이터 포함
+      final deepLinkUrl = Uri(
+        scheme: scheme,
+        host: host,
+        queryParameters: {'cardData': encodedCard}
+      ).toString();
+      print('생성된 딥링크 URL: $deepLinkUrl');
 
       final template = FeedTemplate(
         content: Content(
@@ -117,8 +123,8 @@ class DeepLinkHandler {
           description: '지금 바로 확인해보세요!',
           imageUrl: Uri.parse('assets/book.png'),
           link: Link(
-            webUrl: Uri.parse(iosScheme),
-            mobileWebUrl: Uri.parse(iosScheme),
+            webUrl: Uri.parse(deepLinkUrl),
+            mobileWebUrl: Uri.parse(deepLinkUrl),
           ),
         ),
         buttons: [
@@ -134,8 +140,8 @@ class DeepLinkHandler {
                 'cardData': encodedCard,
               },
               // iOS Universal Link 지원
-              mobileWebUrl: Uri.parse('$iosScheme?cardData=$encodedCard'),
-              webUrl: Uri.parse('$iosScheme?cardData=$encodedCard'),
+              mobileWebUrl: Uri.parse(deepLinkUrl),
+              webUrl: Uri.parse(deepLinkUrl),
             ),
           ),
         ],
