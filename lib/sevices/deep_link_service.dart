@@ -41,13 +41,24 @@ class DeepLinkHandler {
 
   // Uri 객체를 직접 처리하도록 수정
   void _handleLink(Uri uri) {
+    print('수신된 URI: $uri'); // 디버깅용
+
     if (uri.scheme == scheme) {
-      switch (uri.host) {
-        case host:
+      // queryParameters에서 path 확인
+      final path = uri.queryParameters['path'];
+      print('Path 파라미터: $path'); // 디버깅용
+
+      switch (path) {
+        case 'decode':
           _navigateToDecodePage();
           break;
+        // 다른 path 케이스들 추가 가능
         default:
-          print('알 수 없는 딥링크 호스트: ${uri.host}');
+          print('알 수 없는 path 파라미터: $path');
+          // path가 없는 경우 host로 폴백
+          if (uri.host == host) {
+            _navigateToDecodePage();
+          }
       }
     }
   }
