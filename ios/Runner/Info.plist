@@ -59,17 +59,17 @@
 
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-	<string>instagram-stories</string>
-	<string>facebook-stories</string>
-	<string>facebook</string>
-	<string>instagram</string>
-	<string>twitter</string>
-	<string>whatsapp</string>
-    <string>tg</string>
-	<string>fbapi</string>
-  	<string>fb-messenger-share-api</string>
-    <string>kakaokompassauth</string>
-    <string>kakaolink</string>
+		<string>instagram-stories</string>
+		<string>facebook-stories</string>
+		<string>facebook</string>
+		<string>instagram</string>
+		<string>twitter</string>
+		<string>whatsapp</string>
+		<string>tg</string>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>kakaokompassauth</string>
+		<string>kakaolink</string>
 	</array>
 
 	<key>CFBundleURLTypes</key>
@@ -81,11 +81,11 @@
 			</array>
 		</dict>
 		<dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-            <string>myapp</string>
-        </array>
-        <key>CFBundleURLName</key>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>myapp</string>
+			</array>
+			<key>CFBundleURLName</key>
         <string>com.example.myapp</string>
     </dict>
 	</array>

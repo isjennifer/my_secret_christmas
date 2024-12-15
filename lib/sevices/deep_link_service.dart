@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:my_secret_christmas/main.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
 import 'package:uni_links/uni_links.dart';
@@ -22,17 +23,16 @@ class DeepLinkHandler {
 
   Future<void> initUniLinks() async {
     try {
-      // 앱이 종료된 상태에서 실행된 경우의 딥링크 처리
+      print('Deep Link 초기화 시작...');
       final initialUri = await getInitialUri();
+      print('Initial URI: $initialUri');
       if (initialUri != null) {
         _handleLink(initialUri);
       }
 
-      // 앱이 실행 중일 때의 딥링크 처리
       uriLinkStream.listen((Uri? uri) {
-        if (uri != null) {
-          _handleLink(uri);
-        }
+        print('수신된 딥링크: $uri');
+        if (uri != null) _handleLink(uri);
       }, onError: (err) {
         print('딥링크 스트림 에러: $err');
       });
@@ -41,38 +41,43 @@ class DeepLinkHandler {
     }
   }
 
-  // Uri 객체를 직접 처리하도록 수정
   void _handleLink(Uri uri) {
-    print('수신된 URI: $uri'); // 디버깅용
+    print('==== 딥링크 처리 시작 ====');
+    print('수신된 URI: $uri');
+    print('스킴: ${uri.scheme}');
+    print('호스트: ${uri.host}');
+    print('경로: ${uri.path}');
+    print('쿼리 파라미터: ${uri.queryParameters}');
 
-    if (uri.scheme == scheme) {
-      // queryParameters에서 path 확인
-      final path = uri.queryParameters['path'];
-      print('Path 파라미터: $path'); // 디버깅용
+    if (uri.scheme == scheme && uri.host == 'decode') {
+      final cardData = uri.queryParameters['cardData'];
+      print('카드 데이터: $cardData');
 
-      final String? encodedCard = uri.queryParameters['cardData'];
+      if (cardData != null) {
+        try {
+          final decodedBytes = base64Decode(cardData);
+          final decodedJson = utf8.decode(decodedBytes);
+          final cardDataMap = jsonDecode(decodedJson);
+          print('디코딩된 카드 데이터: $cardDataMap');
 
-      switch (path) {
-        case 'decode':
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            navigatorKey.currentState?.push(
+              MaterialPageRoute(
+                // builder: (context) => DecodeMessagePage(cardData: cardDataMap),
+                // builder: (context) => DecodeMessagePage(),
+                builder: (context) => MyHomePage(title: 'Merry Secret Christmas'),
+              ),
+            );
+          });
+        } catch (e) {
+          print('카드 데이터 디코딩 에러: $e');
           _navigateToDecodePage();
-          break;
-        // 다른 path 케이스들 추가 가능
-        default:
-          print('알 수 없는 path 파라미터: $path');
-          // path가 없는 경우 host로 폴백
-          if (uri.host == host) {
-            _navigateToDecodePage();
-          }
+        }
+      } else {
+        print('카드 데이터 없음');
+        _navigateToDecodePage();
       }
     }
-  }
-
-  void _navigateToDecodePage() {
-    navigatorKey.currentState?.push(
-      MaterialPageRoute(
-        builder: (context) => const DecodeMessagePage(),
-      ),
-    );
   }
 
   Future<void> shareToKakao({required ChristmasCard card}) async {
@@ -81,14 +86,17 @@ class DeepLinkHandler {
       final String cardJson = jsonEncode(card.toJson());
       final String encodedCard = base64Encode(utf8.encode(cardJson));
 
+      // iOS용 URL 스킴 설정
+      final iosScheme = '$scheme://decode';
+
       final template = FeedTemplate(
         content: Content(
           title: '크리스마스 시크릿 메시지가 도착했어요!',
           description: '지금 바로 확인해보세요!',
           imageUrl: Uri.parse('assets/book.png'),
           link: Link(
-            androidExecutionParams: {'path': 'decode'},
-            iosExecutionParams: {'path': 'decode'},
+            webUrl: Uri.parse(iosScheme),
+            mobileWebUrl: Uri.parse(iosScheme),
           ),
         ),
         buttons: [
@@ -103,6 +111,9 @@ class DeepLinkHandler {
                 'path': 'decode',
                 'cardData': encodedCard,
               },
+              // iOS Universal Link 지원
+              mobileWebUrl: Uri.parse('$iosScheme?cardData=$encodedCard'),
+              webUrl: Uri.parse('$iosScheme?cardData=$encodedCard'),
             ),
           ),
         ],
@@ -122,6 +133,16 @@ class DeepLinkHandler {
     } catch (error) {
       print('카카오톡 공유 실패: $error');
     }
+  }
+
+  void _navigateToDecodePage() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (context) => const DecodeMessagePage(),
+        ),
+      );
+    });
   }
 
   Future<void> handleAppLink() async {
