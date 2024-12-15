@@ -127,6 +127,12 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
           ),
         ),
         const SizedBox(height: 40),
+        const Text(
+          '⚠️ 본 앱은 현재 Android 버전을 지원하지 않습니다.\n🍎 iOS 사용자에게만 공유해주세요!',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 10),
         // 공유 버튼들
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
