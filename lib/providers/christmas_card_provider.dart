@@ -1,13 +1,14 @@
 import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final christmasCardProvider = StateNotifierProvider<ChristmasCardNotifier, ChristmasCard>(
+final christmasCardProvider =
+    StateNotifierProvider<ChristmasCardNotifier, ChristmasCard>(
   (ref) => ChristmasCardNotifier(),
 );
 
 class ChristmasCardNotifier extends StateNotifier<ChristmasCard> {
   ChristmasCardNotifier() : super(ChristmasCard());
-  
+
   // 보내는 사람 업데이트
   void updateSender(String sender) {
     state = ChristmasCard(
@@ -18,7 +19,7 @@ class ChristmasCardNotifier extends StateNotifier<ChristmasCard> {
       quiz: state.quiz,
     );
   }
-  
+
   // 내용 업데이트
   void updateContent(String content) {
     state = ChristmasCard(
@@ -29,7 +30,7 @@ class ChristmasCardNotifier extends StateNotifier<ChristmasCard> {
       quiz: state.quiz,
     );
   }
-  
+
   // 받는 사람 업데이트
   void updateRecipient(String recipient) {
     state = ChristmasCard(
@@ -40,7 +41,7 @@ class ChristmasCardNotifier extends StateNotifier<ChristmasCard> {
       quiz: state.quiz,
     );
   }
-  
+
   // 이미지 URL 업데이트
   void updateCardImage(String imageUrl) {
     state = ChristmasCard(
@@ -51,7 +52,7 @@ class ChristmasCardNotifier extends StateNotifier<ChristmasCard> {
       quiz: state.quiz,
     );
   }
-  
+
   // 퀴즈 정보 업데이트
   void updateQuiz(Quiz quiz) {
     state = ChristmasCard(
@@ -61,5 +62,9 @@ class ChristmasCardNotifier extends StateNotifier<ChristmasCard> {
       cardImageUrl: state.cardImageUrl,
       quiz: quiz,
     );
+  }
+
+  void resetCard() {
+    state = ChristmasCard(); // 기본 생성자를 호출하여 모든 필드를 초기화
   }
 }
