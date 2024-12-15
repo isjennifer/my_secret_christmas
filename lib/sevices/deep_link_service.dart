@@ -26,7 +26,10 @@ class DeepLinkHandler {
   StreamSubscription? _linkSubscription;
 
   Future<void> initUniLinks() async {
-    if (_isInitialized) return;
+    if (_isInitialized) {
+      print('Deep Link가 이미 초기화되었습니다!');
+      return;
+    }
 
     try {
       print('Deep Link 초기화 시작...');
