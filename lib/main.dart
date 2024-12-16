@@ -326,17 +326,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       ),
                     ),
                   ),
-
-                  // 개발 완료 후 삭제 (메시지 보낸 횟수 증가시키는 버튼)
-                  Positioned(
-                    top: 10,
-                    left: 10,
-                    child: IconButton(
-                        onPressed: () async {
-                          await CollectionPage.incrementCount();
-                        },
-                        icon: Icon(Icons.add_card_outlined)),
-                  ),
                 ],
               ),
             ),
