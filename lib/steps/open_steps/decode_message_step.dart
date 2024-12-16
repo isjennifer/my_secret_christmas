@@ -189,7 +189,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                     },
                                     child: Text(
                                       _showAnswer
-                                          ? '🎅 : 허허허! 메리크리스마스!\n정답은 "$quiz_answer" 란다!'
+                                          ? '🎅 : 허허허! 메리크리스마스!\n정답은 "$quiz_answer"(이)란다!'
                                           : '📣 산타할아버지! 정답을 알려주세요!',
                                       style: TextStyle(
                                         fontSize: 18,

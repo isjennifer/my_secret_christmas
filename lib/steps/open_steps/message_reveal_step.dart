@@ -151,7 +151,7 @@ class _MessageRevealPageState extends State<MessageRevealPage>
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            '${widget.sender}\n${widget.content}\n${widget.recipient}',
+                                            '${widget.content}\n\n${widget.sender}가,\n${widget.recipient}에게.',
                                             style: TextStyle(
                                               fontSize: 18,
                                               height: 1.5,
