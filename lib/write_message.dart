@@ -166,6 +166,16 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
     return true;
   }
 
+// 세 번째 스텝 유효성 검사
+  bool _validateThirdStep(BuildContext context) {
+    final isHiding = ref.watch(isHidingProvider);
+    if (isHiding) {
+      _showSnackBar(context, '메시지를 숨기는 중입니다...');
+      return false;
+    }
+    return true;
+  }
+
 // 네 번째 스텝 유효성 검사
   bool _validateFourthStep(ChristmasCard cardState, BuildContext context) {
     if (cardState.quiz?.question?.isEmpty ?? true) {
@@ -225,6 +235,7 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
   }
 
   Future<bool> _showExitDialog(BuildContext context) async {
+    final isHiding = ref.watch(isHidingProvider);
     return await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -240,6 +251,7 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
               TextButton(
                 onPressed: () {
                   ref.read(christmasCardProvider.notifier).resetCard();
+                  ref.read(isHidingProvider.notifier).state = !isHiding;
                   Navigator.of(context).pop(true);
                 },
                 child: const Text('예'),
@@ -323,6 +335,8 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
                                     onPressed: () {
                                       final cardState =
                                           ref.read(christmasCardProvider);
+                                      final isHiding =
+                                          ref.watch(isHidingProvider);
 
                                       // 스텝별 유효성 검사 및 처리
                                       switch (_currentStep) {
@@ -336,10 +350,16 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
                                           if (!_validateSecondStep(
                                               cardState, context)) return;
                                           _moveToNextStep();
+
                                           break;
 
                                         case 2:
+                                          if (!_validateThirdStep(context))
+                                            return;
                                           _moveToNextStep();
+                                          ref
+                                              .read(isHidingProvider.notifier)
+                                              .state = isHiding;
                                           break;
 
                                         case 3:

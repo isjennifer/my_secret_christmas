@@ -1,8 +1,9 @@
-// lib/pages/steps/hide_message_step.dart
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HideMessageStep extends StatefulWidget {
+final isHidingProvider = StateProvider<bool>((ref) => true);
+
+class HideMessageStep extends ConsumerStatefulWidget {
   const HideMessageStep({
     super.key,
     required this.onNext,
@@ -13,13 +14,10 @@ class HideMessageStep extends StatefulWidget {
   final VoidCallback onPrevious;
 
   @override
-  State<HideMessageStep> createState() => _HideMessageStepState();
+  ConsumerState<HideMessageStep> createState() => _HideMessageStepState();
 }
 
-class _HideMessageStepState extends State<HideMessageStep> {
-  bool _isHiding = true;
-  bool _isComplete = false;
-
+class _HideMessageStepState extends ConsumerState<HideMessageStep> {
   @override
   void initState() {
     super.initState();
@@ -27,26 +25,22 @@ class _HideMessageStepState extends State<HideMessageStep> {
   }
 
   Future<void> _startHidingProcess() async {
-    // 실제 메시지 숨기기 로직이 들어갈 자리입니다.
-    // 현재는 시뮬레이션을 위해 딜레이만 추가합니다.
     await Future.delayed(const Duration(seconds: 3));
-
     if (mounted) {
-      setState(() {
-        _isHiding = false;
-        _isComplete = true;
-      });
+      ref.read(isHidingProvider.notifier).state = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isHiding = ref.watch(isHidingProvider);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 20),
-        if (_isHiding) ...[
+        if (isHiding) ...[
           const CircularProgressIndicator(
             color: Colors.red,
             strokeWidth: 5,
@@ -69,7 +63,7 @@ class _HideMessageStepState extends State<HideMessageStep> {
             ),
             textAlign: TextAlign.center,
           ),
-        ] else if (_isComplete) ...[
+        ] else ...[
           Container(
             width: 80,
             height: 80,
