@@ -82,6 +82,7 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
           backgroundBottomColor: "#BF1011",
           backgroundResourcePath: "",
           attributionURL: "");
+
       await CollectionPage.incrementCount();
     } else {
       // Instagram이 설치되어 있지 않을 때의 처리
@@ -169,13 +170,7 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
           ),
         ),
         const SizedBox(height: 40),
-        const Text(
-          '⚠️ 본 앱은 현재 Android 버전을 지원하지 않습니다.\n🍎 iOS 사용자에게만 공유해주세요!',
-          style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 10),
+
         // 공유 버튼들
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -183,9 +178,101 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
             children: [
               ElevatedButton(
                 onPressed: () {
-                  // 카카오톡 공유 로직
                   final cardData = ref.read(christmasCardProvider);
-                  DeepLinkHandler().shareToKakao(card: cardData);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text(
+                                    '알림',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+
+                              // 안드로이드 지원 안됨 메시지
+                              const Text(
+                                '⚠️ 본 앱은 현재 Android 버전을 지원하지 않습니다.\n🍎 iOS 사용자에게만 공유해주세요!',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+
+                              // 확인 버튼
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      style: TextButton.styleFrom(
+                                        backgroundColor: Colors.grey.shade100,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        '취소',
+                                        style: TextStyle(
+                                          color: Colors.black54,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        DeepLinkHandler()
+                                            .shareToKakao(card: cardData);
+                                      },
+                                      style: TextButton.styleFrom(
+                                        backgroundColor: Colors.red.shade400,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        '계속하기',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFE812),
@@ -220,41 +307,180 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () async {
+                  // 카드 데이터 읽기
+                  final cardData = ref.read(christmasCardProvider);
+                  // 딥링크 URL 생성
+                  final url =
+                      DeepLinkHandler().createDeepLinkUrl(card: cardData);
+
                   try {
-                    // 카드 데이터 읽기
-                    final cardData = ref.read(christmasCardProvider);
-
-                    // 딥링크 URL 생성
-                    final url =
-                        DeepLinkHandler().createDeepLinkUrl(card: cardData);
-
-                    // 클립보드에 복사
-                    await Clipboard.setData(ClipboardData(text: url));
-
                     // 복사 성공 시 모달 표시
                     if (context.mounted) {
                       await showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('링크 복사 완료'),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text('링크가 클립보드에 복사되었습니다.'),
-                                SizedBox(height: 8),
-                                Text('인스타그램 스토리 작성시, 링크 스티커를 이용해 붙여넣어주세요.')
-                              ],
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  shareToInstagram(); // 모달이 닫힌 후 인스타그램 공유 실행
-                                },
-                                child: Text('확인'),
+                            child: Container(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // 헤더
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        '인스타그램 공유하기',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 24),
+
+                                  // 안내 컨테이너 1
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        left: BorderSide(
+                                          color: Colors.pink.shade300,
+                                          width: 4,
+                                        ),
+                                      ),
+                                      color: Colors.pink.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: const [
+                                            Icon(Icons.copy,
+                                                size: 18, color: Colors.pink),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              'URL 복사하기',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.pink,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text('내가 작성한 메시지의 URL을 복사해주세요.'),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+
+                                  // 안내 컨테이너 2
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        left: BorderSide(
+                                          color: Colors.pink.shade300,
+                                          width: 4,
+                                        ),
+                                      ),
+                                      color: Colors.pink.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: const [
+                                            Icon(Icons.edit_square,
+                                                size: 18, color: Colors.pink),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              '스토리에 공유하기',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.pink,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                            '인스타그램 스토리 작성시, 링크 스티커를 이용해 붙여넣어주세요.'),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+
+                                  // 버튼 영역
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextButton.icon(
+                                        onPressed: () {
+                                          Clipboard.setData(
+                                              ClipboardData(text: url));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                                content: Text(
+                                                    'URL이 클립보드에 복사되었습니다.')),
+                                          );
+                                        },
+                                        icon: const Icon(Icons.copy,
+                                            color: Colors.pink),
+                                        label: const Text(
+                                          'URL 복사',
+                                          style: TextStyle(color: Colors.pink),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                8), // 모서리 둥글기
+                                            side: BorderSide(
+                                              color: Colors.pink, // 테두리 색상
+                                              width: 1.0, // 테두리 두께
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      TextButton.icon(
+                                        onPressed: () {
+                                          shareToInstagram();
+                                        },
+                                        icon: const Icon(Icons.edit_square,
+                                            color: Colors.white),
+                                        label: const Text(
+                                          '스토리 작성',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        style: TextButton.styleFrom(
+                                          backgroundColor: Colors.pink,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           );
                         },
                       );

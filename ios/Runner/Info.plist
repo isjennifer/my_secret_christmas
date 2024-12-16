@@ -99,5 +99,7 @@
 
 	<key>UIPasteboardFlushSaveHandlers</key>
 	<true/>
+	<key>NSPasteboardTypeString</key>
+    <string>public.plain-text</string>
 </dict>
 </plist>
