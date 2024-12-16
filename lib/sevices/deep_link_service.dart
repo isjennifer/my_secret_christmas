@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 
@@ -23,6 +23,9 @@ class DeepLinkHandler {
   static const String iOSAppStoreId = '123456789';
 
   bool _isInitialized = false;
+  // public getter 추가
+  bool get isInitialized => _isInitialized;
+  late AppLinks _appLinks;
   StreamSubscription? _linkSubscription;
 
   Future<void> initUniLinks() async {
@@ -30,25 +33,28 @@ class DeepLinkHandler {
 
     if (_isInitialized) {
       print('Deep Link가 이미 초기화되었습니다!');
-      _linkSubscription?.cancel(); // 기존 구독 취소
-      _isInitialized = false;
+      return;
     }
 
     try {
-      // 앱이 완전히 종료된 상태에서 시작될 때의 딥링크 처리
-      final initialUri = await getInitialUri();
-      print('Initial URI: $initialUri');
-      if (initialUri != null) {
-        _handleLink(initialUri);
-      }
-
+      _appLinks = AppLinks();
+      // 기존 구독이 있다면 취소
+      await _linkSubscription?.cancel();
       // 스트림 구독 설정
-      _linkSubscription = uriLinkStream.listen((Uri? uri) {
+      _linkSubscription = _appLinks.uriLinkStream.listen((Uri uri) {
         print('수신된 딥링크: $uri');
-        if (uri != null) _handleLink(uri);
+        handleLink(uri);
       }, onError: (err) {
         print('딥링크 스트림 에러: $err');
       });
+
+      // 앱이 완전히 종료된 상태에서 시작될 때의 딥링크 처리
+      final initialUri = await _appLinks.getInitialLink();
+
+      print('Initial URI: $initialUri');
+      if (initialUri != null) {
+        handleLink(initialUri);
+      }
 
       _isInitialized = true;
     } catch (e) {
@@ -62,7 +68,7 @@ class DeepLinkHandler {
     _isInitialized = false;
   }
 
-  void _handleLink(Uri uri) {
+  void handleLink(Uri uri) {
     print('==== 딥링크 처리 시작 ====');
     print('수신된 URI: $uri');
     print('스킴: ${uri.scheme}');
@@ -115,11 +121,13 @@ class DeepLinkHandler {
             link: Link(
               androidExecutionParams: {
                 'path': 'decode',
-                'cardData': base64Encode(utf8.encode(jsonEncode(card.toJson()))),
+                'cardData':
+                    base64Encode(utf8.encode(jsonEncode(card.toJson()))),
               },
               iosExecutionParams: {
                 'path': 'decode',
-                'cardData': base64Encode(utf8.encode(jsonEncode(card.toJson()))),
+                'cardData':
+                    base64Encode(utf8.encode(jsonEncode(card.toJson()))),
               },
               // iOS Universal Link 지원
               mobileWebUrl: Uri.parse(deepLinkUrl),

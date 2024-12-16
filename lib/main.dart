@@ -1,5 +1,7 @@
 //main.dart 페이지
 import 'dart:async';
+import 'dart:convert';
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,9 +32,6 @@ Future<void> main() async {
     nativeAppKey: 'decf946daaaa80724532096b84f512cb',
   );
 
-  // 딥링크 핸들러 초기화
-  await DeepLinkHandler().initUniLinks();
-
   runApp(
     // 최상위 위젯을 ProviderScope로 감싸기
     ProviderScope(
@@ -52,16 +51,66 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final AudioService _audioService = AudioService();
-  final DeepLinkHandler _deepLinkHandler = DeepLinkHandler();
+  AppLinks? _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
 
   @override
   void initState() {
     super.initState();
     _initBackgroundMusic();
     WidgetsBinding.instance.addObserver(this);
+    _initDeepLinks();
+  }
 
-    // 딥링크 핸들러 초기화
-    _deepLinkHandler.initUniLinks();
+  // 딥링크 초기화를 위한 별도 메서드
+  Future<void> _initDeepLinks() async {
+    try {
+      _appLinks = AppLinks();
+
+      // Stream 구독 설정
+      _linkSubscription = _appLinks?.uriLinkStream.listen(
+        (Uri uri) {
+          print('딥링크 수신: $uri');
+          print('스킴: ${uri.scheme}');
+          print('호스트: ${uri.host}');
+          print('쿼리: ${uri.queryParameters}');
+          _handleLink(uri);
+        },
+        onError: (err) => print('딥링크 스트림 에러: $err'),
+      );
+
+      // 초기 URI 확인
+      final initialUri = await _appLinks?.getInitialLink();
+      print('초기 URI: $initialUri');
+      if (initialUri != null) {
+        _handleLink(initialUri);
+      }
+    } catch (e) {
+      print('딥링크 초기화 에러: $e');
+    }
+  }
+
+  void _handleLink(Uri uri) {
+    if (uri.scheme == 'myapp' && uri.host == 'decode') {
+      final cardData = uri.queryParameters['cardData'];
+      if (cardData != null) {
+        try {
+          final decodedBytes = base64Decode(cardData);
+          final decodedJson = utf8.decode(decodedBytes);
+          final cardDataMap = jsonDecode(decodedJson);
+          // final christmasCard = ChristmasCard.fromJson(cardDataMap);
+
+          // // 페이지 이동
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (context) => DecodeMessagePage(cardData: christmasCard),
+          //   ),
+          // );
+        } catch (e) {
+          print('카드 데이터 디코딩 에러: $e');
+        }
+      }
+    }
   }
 
   Future<void> _initBackgroundMusic() async {
@@ -78,20 +127,35 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         _audioService.pause();
         break;
       case AppLifecycleState.resumed:
+        print("포그라운드 전환!");
         // 앱이 포그라운드로 돌아올 때
         if (_audioService.isPlaying) {
           _audioService.play();
         }
 
         // 딥링크 핸들러 재초기화
-        _deepLinkHandler.initUniLinks();
+        // 앱이 다시 시작될 때만 딥링크 재초기화
+        _checkCurrentDeepLink();
         break;
       case AppLifecycleState.detached:
         // 앱이 완전히 종료될 때
-        _deepLinkHandler.dispose();
+        // _deepLinkHandler.dispose();
         break;
       default:
         break;
+    }
+  }
+
+// 현재의 딥링크 URI를 확인하는 메서드
+  Future<void> _checkCurrentDeepLink() async {
+    try {
+      final uri = await _appLinks?.getInitialLink();
+      print('현재 딥링크 URI: $uri');
+      if (uri != null) {
+        _handleLink(uri);
+      }
+    } catch (e) {
+      print('현재 딥링크 확인 중 에러: $e');
     }
   }
 
@@ -99,7 +163,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void dispose() {
     _audioService.stop();
     _audioService.dispose();
-    _deepLinkHandler.dispose();
+    _linkSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

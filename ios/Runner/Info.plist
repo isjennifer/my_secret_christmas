@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>FlutterDeepLinkingEnabled</key>
+    <string>NO</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -79,6 +81,10 @@
 			<array>
 				<string>kakaodecf946daaaa80724532096b84f512cb</string>
 			</array>
+			<key>CFBundleURLName</key>
+			<string>kakao</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 		</dict>
 		<dict>
 			<key>CFBundleURLSchemes</key>
@@ -86,8 +92,12 @@
 				<string>myapp</string>
 			</array>
 			<key>CFBundleURLName</key>
-        <string>com.example.myapp</string>
-    </dict>
+			<string>com.example.mySecretChristmas</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string></string>
+		</dict>
 	</array>
 
 	<key>FacebookAutoLogAppEventsEnabled</key>
