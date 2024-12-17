@@ -101,8 +101,8 @@ class KakaoSchemeHandler {
           description: '지금 바로 확인해보세요!',
           imageUrl: Uri.parse('assets/book.png'),
           link: Link(
-            webUrl: Uri.parse('https://your-domain.com'), // 폴백용 웹 URL
-            mobileWebUrl: Uri.parse('https://your-domain.com'), // 폴백용 웹 URL
+            androidExecutionParams: {'cardData': encodedCard},  // content.link에도 실행 파라미터 추가
+            iosExecutionParams: {'cardData': encodedCard}, 
           ),
         ),
         buttons: [
