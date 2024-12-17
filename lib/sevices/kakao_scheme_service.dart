@@ -43,7 +43,7 @@ class KakaoSchemeHandler {
 
       // 스트림 설정
       kakaoSchemeStream.listen(
-        (String? scheme) {
+        (scheme) {
           print('수신된 카카오 스킴: $scheme');
           if (scheme != null) _handleScheme(scheme);
         },
