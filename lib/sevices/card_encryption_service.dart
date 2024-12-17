@@ -12,7 +12,8 @@ class CardEncryptionService {
   // 앱 스토어 다운로드 링크
   static const String androidPlayStoreUrl =
       'https://play.google.com/store/apps/details?id=com.example.myapp';
-  static const String iOSAppStoreUrl = 'https://apps.apple.com/app/id123456789';
+  static const String iOSAppStoreUrl = 'https://apps.apple.com';
+  //app/id123456789
 
   // 고정 IV (16바이트)
   static final _iv = encrypt.IV.fromLength(16);
