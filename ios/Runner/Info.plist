@@ -101,5 +101,7 @@
 	<true/>
 	<key>NSPasteboardTypeString</key>
     <string>public.plain-text</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>사진을 업로드하기 위해 사진 접근 권한이 필요합니다.</string>
 </dict>
 </plist>
