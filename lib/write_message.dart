@@ -228,7 +228,7 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
         ),
       );
       requestReview();
-      openStoreListing();
+      // openStoreListing();
     }
   }
 
@@ -276,7 +276,7 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
               TextButton(
                 onPressed: () {
                   ref.read(christmasCardProvider.notifier).resetCard();
-                  ref.read(isHidingProvider.notifier).state = !isHiding;
+                  ref.read(isHidingProvider.notifier).state = true;
                   Navigator.of(context).pop(true);
                 },
                 child: const Text('예'),
