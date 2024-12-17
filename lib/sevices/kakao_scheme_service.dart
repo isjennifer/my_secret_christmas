@@ -9,10 +9,10 @@ import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 
-class DeepLinkHandler {
-  static final DeepLinkHandler _instance = DeepLinkHandler._internal();
-  factory DeepLinkHandler() => _instance;
-  DeepLinkHandler._internal();
+class KakaoSchemeHandler {
+  static final KakaoSchemeHandler _instance = KakaoSchemeHandler._internal();
+  factory KakaoSchemeHandler() => _instance;
+  KakaoSchemeHandler._internal();
 
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
@@ -26,29 +26,31 @@ class DeepLinkHandler {
   StreamSubscription? _linkSubscription;
 
   Future<void> initUniLinks() async {
-    print('Deep Link 초기화 시작...');
+    print('카카오 스킴 초기화 시작...');
 
     if (_isInitialized) {
-      print('Deep Link가 이미 초기화되었습니다!');
-      _linkSubscription?.cancel(); // 기존 구독 취소
-      _isInitialized = false;
+      print('카카오 스킴이 이미 초기화되었습니다!');
+      return;
     }
 
     try {
       // 앱이 완전히 종료된 상태에서 시작될 때의 딥링크 처리
-      final initialUri = await getInitialUri();
-      print('Initial URI: $initialUri');
-      if (initialUri != null) {
-        _handleLink(initialUri);
+      final initialScheme = await receiveKakaoScheme();
+      print('Initial Scheme: $initialScheme');
+      if (initialScheme != null) {
+        _handleScheme(initialScheme);
       }
 
-      // 스트림 구독 설정
-      _linkSubscription = uriLinkStream.listen((Uri? uri) {
-        print('수신된 딥링크: $uri');
-        if (uri != null) _handleLink(uri);
-      }, onError: (err) {
-        print('딥링크 스트림 에러: $err');
-      });
+      // 스트림 설정
+      kakaoSchemeStream.listen(
+        (String? scheme) {
+          print('수신된 카카오 스킴: $scheme');
+          if (scheme != null) _handleScheme(scheme);
+        },
+        onError: (err) {
+          print('카카오 스킴 스트림 에러: $err');
+        },
+      );
 
       _isInitialized = true;
     } catch (e) {
@@ -62,42 +64,36 @@ class DeepLinkHandler {
     _isInitialized = false;
   }
 
-  void _handleLink(Uri uri) {
+  void _handleScheme(String schemeUrl) {
     print('==== 딥링크 처리 시작 ====');
-    print('수신된 URI: $uri');
-    print('스킴: ${uri.scheme}');
-    print('호스트: ${uri.host}');
-    print('경로: ${uri.path}');
-    print('쿼리 파라미터: ${uri.queryParameters}');
+    print('수신된 스킴: $schemeUrl');
 
-    if (uri.scheme == scheme && uri.host == 'decode') {
-      final cardData = uri.queryParameters['cardData'];
-      print('카드 데이터: $cardData');
+    try {
+      final uri = Uri.parse(schemeUrl);
+      if (uri.path.contains('kakaolink')) {
+        final cardData = uri.queryParameters['cardData'];
+        print('카드 데이터: $cardData');
 
-      if (cardData != null) {
-        try {
+        if (cardData != null) {
           final decodedBytes = base64Decode(cardData);
           final decodedJson = utf8.decode(decodedBytes);
           final Map<String, dynamic> cardDataMap = jsonDecode(decodedJson);
           print('디코딩된 카드 데이터: $cardDataMap');
-          // Map을 ChristmasCard 객체로 변환
+
           final ChristmasCard christmasCard =
               ChristmasCard.fromJson(cardDataMap);
-
           _navigateToDecodePage(christmasCard);
-        } catch (e) {
-          print('카드 데이터 디코딩 에러: $e');
         }
-      } else {
-        print('카드 데이터 없음');
       }
+    } catch (e) {
+      print('카카오 스킴 처리 중 에러 발생: $e');
     }
   }
 
   Future<void> shareToKakao({required ChristmasCard card}) async {
     try {
-      final deepLinkUrl = createDeepLinkUrl(card: card);
-      print('생성된 딥링크 URL: $deepLinkUrl');
+      final cardJson = jsonEncode(card.toJson());
+      final encodedCard = base64Encode(utf8.encode(cardJson));
 
       final template = FeedTemplate(
         content: Content(
@@ -105,25 +101,16 @@ class DeepLinkHandler {
           description: '지금 바로 확인해보세요!',
           imageUrl: Uri.parse('assets/book.png'),
           link: Link(
-            webUrl: Uri.parse(deepLinkUrl),
-            mobileWebUrl: Uri.parse(deepLinkUrl),
+            webUrl: Uri.parse('https://your-domain.com'), // 폴백용 웹 URL
+            mobileWebUrl: Uri.parse('https://your-domain.com'), // 폴백용 웹 URL
           ),
         ),
         buttons: [
           Button(
             title: '메시지 확인하기',
             link: Link(
-              androidExecutionParams: {
-                'path': 'decode',
-                'cardData': base64Encode(utf8.encode(jsonEncode(card.toJson()))),
-              },
-              iosExecutionParams: {
-                'path': 'decode',
-                'cardData': base64Encode(utf8.encode(jsonEncode(card.toJson()))),
-              },
-              // iOS Universal Link 지원
-              mobileWebUrl: Uri.parse(deepLinkUrl),
-              webUrl: Uri.parse(deepLinkUrl),
+              androidExecutionParams: {'cardData': encodedCard},
+              iosExecutionParams: {'cardData': encodedCard},
             ),
           ),
         ],

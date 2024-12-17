@@ -7,7 +7,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
 import 'package:my_secret_christmas/postbox_page.dart';
-import 'package:my_secret_christmas/sevices/deep_link_service.dart';
+import 'package:my_secret_christmas/sevices/kakao_scheme_service.dart';
 import 'write_message.dart';
 import './widgets/snowflake.dart';
 import './widgets/snow_theme.dart';
@@ -31,12 +31,12 @@ Future<void> main() async {
   );
 
   // 딥링크 핸들러 초기화
-  await DeepLinkHandler().initUniLinks();
+  await KakaoSchemeHandler().initUniLinks();
 
   runApp(
     // 최상위 위젯을 ProviderScope로 감싸기
     ProviderScope(
-      child: MyApp(navigatorKey: DeepLinkHandler.navigatorKey),
+      child: MyApp(navigatorKey: KakaoSchemeHandler.navigatorKey),
     ),
   );
 }
@@ -52,16 +52,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final AudioService _audioService = AudioService();
-  final DeepLinkHandler _deepLinkHandler = DeepLinkHandler();
+  final KakaoSchemeHandler _deepLinkHandler = KakaoSchemeHandler();
 
   @override
   void initState() {
     super.initState();
     _initBackgroundMusic();
     WidgetsBinding.instance.addObserver(this);
-
-    // 딥링크 핸들러 초기화
-    _deepLinkHandler.initUniLinks();
   }
 
   Future<void> _initBackgroundMusic() async {

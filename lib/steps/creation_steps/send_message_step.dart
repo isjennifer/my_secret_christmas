@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_secret_christmas/providers/christmas_card_provider.dart';
-import 'package:my_secret_christmas/sevices/deep_link_service.dart';
+import 'package:my_secret_christmas/sevices/kakao_scheme_service.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 import 'dart:io';
 import 'package:social_share/social_share.dart';
@@ -244,7 +244,7 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
                                     child: TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
-                                        DeepLinkHandler()
+                                        KakaoSchemeHandler()
                                             .shareToKakao(card: cardData);
                                       },
                                       style: TextButton.styleFrom(
@@ -311,7 +311,7 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
                   final cardData = ref.read(christmasCardProvider);
                   // 딥링크 URL 생성
                   final url =
-                      DeepLinkHandler().createDeepLinkUrl(card: cardData);
+                      KakaoSchemeHandler().createDeepLinkUrl(card: cardData);
 
                   try {
                     // 복사 성공 시 모달 표시
