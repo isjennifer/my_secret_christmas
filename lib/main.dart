@@ -52,7 +52,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final AudioService _audioService = AudioService();
-  final KakaoSchemeHandler _deepLinkHandler = KakaoSchemeHandler();
 
   @override
   void initState() {
@@ -79,13 +78,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         if (_audioService.isPlaying) {
           _audioService.play();
         }
-
-        // 딥링크 핸들러 재초기화
-        _deepLinkHandler.initUniLinks();
         break;
       case AppLifecycleState.detached:
-        // 앱이 완전히 종료될 때
-        _deepLinkHandler.dispose();
         break;
       default:
         break;
@@ -96,7 +90,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void dispose() {
     _audioService.stop();
     _audioService.dispose();
-    _deepLinkHandler.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
