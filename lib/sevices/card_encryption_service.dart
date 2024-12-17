@@ -24,29 +24,24 @@ class CardEncryptionService {
       final encryptedData = encryptCard(card: card);
       print('암호화된 카드 DATA: $encryptedData');
 
-      final template = FeedTemplate(
-        content: Content(
-          title: '크리스마스 시크릿 메시지를 확인해보세요!',
-          description: encryptedData,
-          imageUrl: Uri.parse('assets/book.png'),
-          link: Link(
-            webUrl: Uri.parse(iOSAppStoreUrl),
-            mobileWebUrl: Uri.parse(iOSAppStoreUrl),
-          ),
-        ),
-        buttons: [
-          Button(
-            title: '아이폰 다운로드',
-            link: Link(
+      final template = TextTemplate(
+        text:  encryptedData,
+        link: Link(
               webUrl: Uri.parse(iOSAppStoreUrl),
               mobileWebUrl: Uri.parse(iOSAppStoreUrl),
             ),
+        buttons: [
+          Button(
+            title: '앱 열기',
+            link: Link(
+              iosExecutionParams: {'cardData': encryptedData},  
+            ),
           ),
           Button(
-            title: '안드로이드 다운로드',
+            title: '앱 다운로드',
             link: Link(
-              webUrl: Uri.parse(androidPlayStoreUrl),
-              mobileWebUrl: Uri.parse(androidPlayStoreUrl),
+              webUrl: Uri.parse(iOSAppStoreUrl),
+              mobileWebUrl: Uri.parse(iOSAppStoreUrl),
             ),
           ),
         ],
