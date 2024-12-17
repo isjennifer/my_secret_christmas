@@ -256,6 +256,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
+                              const SizedBox(height: 10),
                               if (_attemptCount >= 1 && isCorrect == false)
                                 Text(
                                   'Hint1. $quiz_hint1',
@@ -264,6 +265,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
+                              const SizedBox(height: 5),
                               if (_attemptCount >= 2 && isCorrect == false)
                                 Text(
                                   'Hint2. $quiz_hint2',

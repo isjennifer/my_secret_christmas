@@ -248,7 +248,7 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
                                             .shareToKakao(card: cardData);
                                       },
                                       style: TextButton.styleFrom(
-                                        backgroundColor: Colors.red.shade400,
+                                        backgroundColor: Color(0xFFFFE812),
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 12),
                                         shape: RoundedRectangleBorder(
@@ -259,7 +259,7 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
                                       child: const Text(
                                         '계속하기',
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: Colors.black,
                                           fontSize: 16,
                                         ),
                                       ),
