@@ -12,7 +12,8 @@ class CardEncryptionService {
   // 앱 스토어 다운로드 링크
   static const String androidPlayStoreUrl =
       'https://play.google.com/store/apps/details?id=com.example.myapp';
-  static const String iOSAppStoreUrl = 'https://apps.apple.com';
+  // static const String iOSAppStoreUrl = 'https://apps.apple.com';
+  static const String iOSAppStoreUrl = 'https://apps.apple.com/app/instagram/id389801252';
   //app/id123456789
 
   // 고정 IV (16바이트)
@@ -30,23 +31,19 @@ class CardEncryptionService {
         link: Link(
               webUrl: Uri.parse(iOSAppStoreUrl),
               mobileWebUrl: Uri.parse(iOSAppStoreUrl),
-              androidExecutionParams: null,  // 명시적으로 null 설정
-              iosExecutionParams: null,
             ),
         buttons: [
-          // Button(
-          //   title: '앱 열기',
-          //   link: Link(
-          //     iosExecutionParams: {'cardData': encryptedData},  
-          //   ),
-          // ),
+          Button(
+            title: '앱 열기',
+            link: Link(
+              iosExecutionParams: {'cardData': encryptedData},  
+            ),
+          ),
           Button(
             title: '앱 다운로드',
             link: Link(
               webUrl: Uri.parse(iOSAppStoreUrl),
               mobileWebUrl: Uri.parse(iOSAppStoreUrl),
-              androidExecutionParams: null,  // 명시적으로 null 설정
-              iosExecutionParams: null,
             ),
           ),
         ],
