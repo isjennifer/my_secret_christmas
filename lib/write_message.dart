@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:my_secret_christmas/main.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:my_secret_christmas/providers/christmas_card_provider.dart';
@@ -215,7 +216,7 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
 
 // 제출 처리
   void _handleSubmission(BuildContext context) {
-    print('메시지 전송');
+    print('완료 버튼');
     if (_currentStep < 4) {
       Navigator.pop(context);
     } else {
@@ -226,6 +227,30 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
           builder: (context) => const MyHomePage(title: ''),
         ),
       );
+      requestReview();
+      openStoreListing();
+    }
+  }
+
+  Future<void> requestReview() async {
+    final InAppReview inAppReview = InAppReview.instance;
+    try {
+      // 앱스토어에서 리뷰 가능한지 확인
+      if (await inAppReview.isAvailable()) {
+        await inAppReview.requestReview();
+      }
+    } catch (e) {
+      print('리뷰 요청 중 에러 발생: $e');
+    }
+  }
+
+  // 스토어로 직접 이동하는 방법도 제공
+  Future<void> openStoreListing() async {
+    final InAppReview inAppReview = InAppReview.instance;
+    try {
+      await inAppReview.openStoreListing(appStoreId: 'tjdgk3575@naver.com');
+    } catch (e) {
+      print('스토어 페이지 열기 중 에러 발생: $e');
     }
   }
 
