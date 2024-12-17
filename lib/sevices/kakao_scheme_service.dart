@@ -28,10 +28,10 @@ class KakaoSchemeHandler {
   Future<void> initUniLinks() async {
     print('카카오 스킴 초기화 시작...');
 
-    if (_isInitialized) {
-      print('카카오 스킴이 이미 초기화되었습니다!');
-      return;
-    }
+    // if (_isInitialized) {
+    //   print('카카오 스킴이 이미 초기화되었습니다!');
+    //   return;
+    // }
 
     try {
       // 앱이 완전히 종료된 상태에서 시작될 때의 딥링크 처리
