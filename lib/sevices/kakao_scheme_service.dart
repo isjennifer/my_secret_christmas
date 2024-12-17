@@ -35,7 +35,7 @@ class KakaoSchemeHandler {
 
     try {
       // 앱이 완전히 종료된 상태에서 시작될 때의 딥링크 처리
-      final initialScheme = await receiveKakaoScheme();
+      String? initialScheme = await receiveKakaoScheme();
       print('Initial Scheme: $initialScheme');
       if (initialScheme != null) {
         _handleScheme(initialScheme);
