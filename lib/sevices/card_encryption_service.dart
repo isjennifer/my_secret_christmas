@@ -30,19 +30,23 @@ class CardEncryptionService {
         link: Link(
               webUrl: Uri.parse(iOSAppStoreUrl),
               mobileWebUrl: Uri.parse(iOSAppStoreUrl),
+              androidExecutionParams: null,  // 명시적으로 null 설정
+              iosExecutionParams: null,
             ),
         buttons: [
-          Button(
-            title: '앱 열기',
-            link: Link(
-              iosExecutionParams: {'cardData': encryptedData},  
-            ),
-          ),
+          // Button(
+          //   title: '앱 열기',
+          //   link: Link(
+          //     iosExecutionParams: {'cardData': encryptedData},  
+          //   ),
+          // ),
           Button(
             title: '앱 다운로드',
             link: Link(
               webUrl: Uri.parse(iOSAppStoreUrl),
               mobileWebUrl: Uri.parse(iOSAppStoreUrl),
+              androidExecutionParams: null,  // 명시적으로 null 설정
+              iosExecutionParams: null,
             ),
           ),
         ],
