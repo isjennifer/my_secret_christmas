@@ -4,8 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 
-class DecodeMessageModal extends StatelessWidget {
+class DecodeMessageModal extends StatefulWidget {
   const DecodeMessageModal({super.key});
+
+  @override
+  State<DecodeMessageModal> createState() => _DecodeMessageModalState();
+}
+
+class _DecodeMessageModalState extends State<DecodeMessageModal> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleSubmit() {
+    if (_controller.text.isEmpty) return;
+
+    // 여기에 제출 로직 구현
+    print('제출된 메시지: ${_controller.text}');
+
+    // 입력 필드 초기화
+    _controller.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +74,7 @@ class DecodeMessageModal extends StatelessWidget {
               child: Column(
                 children: [
                   const Text(
-                    '나에게 전송된 시크릿 메시지의\n링크를 클릭해주세요.',
+                    '나에게 전송된 시크릿 메시지의\n고유코드를 입력해주세요.',
                     style: TextStyle(fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
@@ -60,77 +83,30 @@ class DecodeMessageModal extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            // 카카오톡 열기 로직
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFE812),
-                            foregroundColor: Colors.black,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 24,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image(
-                                image: AssetImage('assets/kakao.png'),
-                                width: 26,
-                                height: 26,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                '카카오톡 열기',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _controller,
+                                decoration: InputDecoration(
+                                  hintText: '코드를 입력하세요',
+                                  contentPadding: const EdgeInsets.all(16),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
                                 ),
+                                onSubmitted: (_) => _handleSubmit(),
                               ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton(
+                              onPressed: _handleSubmit,
+                              child: const Text('제출'),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
-                        ElevatedButton(
-                          onPressed: () {
-                            // 인스타그램 열기 로직
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFE4405F),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 24,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image(
-                                image: AssetImage('assets/instagram.png'),
-                                width: 26,
-                                height: 26,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                '인스타그램 열기',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                         // 테스트 버튼
-                        const SizedBox(height: 12),
                         ElevatedButton(
                           onPressed: () {
                             // 퀴즈 객체 생성

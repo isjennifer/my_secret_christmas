@@ -11,6 +11,7 @@ import 'package:my_secret_christmas/decode_message_modal.dart';
 import 'package:my_secret_christmas/postbox_page.dart';
 import 'package:my_secret_christmas/sevices/ad_mob_service.dart';
 import 'package:my_secret_christmas/sevices/deep_link_service.dart';
+import 'package:my_secret_christmas/sevices/card_encryption_service.dart';
 import 'write_message.dart';
 import './widgets/snowflake.dart';
 import './widgets/snow_theme.dart';
@@ -46,21 +47,19 @@ Future<void> main() async {
     nativeAppKey: 'decf946daaaa80724532096b84f512cb',
   );
 
-  // 딥링크 핸들러 초기화
-  await DeepLinkHandler().initUniLinks();
-
   runApp(
     // 최상위 위젯을 ProviderScope로 감싸기
     ProviderScope(
-      child: MyApp(navigatorKey: DeepLinkHandler.navigatorKey),
+      child: MyApp(),
     ),
   );
 }
 
 // This widget is the root of your application.
 class MyApp extends StatefulWidget {
-  final GlobalKey<NavigatorState> navigatorKey;
-  const MyApp({super.key, required this.navigatorKey});
+  const MyApp({
+    super.key
+  });
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -68,16 +67,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final AudioService _audioService = AudioService();
-  final DeepLinkHandler _deepLinkHandler = DeepLinkHandler();
+  final CardEncryptionService _deepLinkHandler = CardEncryptionService();
 
   @override
   void initState() {
     super.initState();
     _initBackgroundMusic();
     WidgetsBinding.instance.addObserver(this);
-
-    // 딥링크 핸들러 초기화
-    _deepLinkHandler.initUniLinks();
   }
 
   Future<void> _initBackgroundMusic() async {
@@ -98,9 +94,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         if (_audioService.isPlaying) {
           _audioService.play();
         }
-
-        // 딥링크 핸들러 재초기화
-        _deepLinkHandler.initUniLinks();
         break;
       case AppLifecycleState.detached:
         // 앱이 완전히 종료될 때
@@ -125,7 +118,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return SnowTheme(
       showSnow: true, // 눈 효과 켜기/끄기 제어
       child: MaterialApp(
-        navigatorKey: widget.navigatorKey,
         title: 'Merry Secret Christmas',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
