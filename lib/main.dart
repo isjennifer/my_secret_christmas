@@ -10,7 +10,6 @@ import 'package:my_secret_christmas/collection_page.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
 import 'package:my_secret_christmas/postbox_page.dart';
 import 'package:my_secret_christmas/sevices/ad_mob_service.dart';
-import 'package:my_secret_christmas/sevices/deep_link_service.dart';
 import 'package:my_secret_christmas/sevices/card_encryption_service.dart';
 import 'write_message.dart';
 import './widgets/snowflake.dart';
@@ -57,9 +56,7 @@ Future<void> main() async {
 
 // This widget is the root of your application.
 class MyApp extends StatefulWidget {
-  const MyApp({
-    super.key
-  });
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
