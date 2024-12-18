@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:my_secret_christmas/main.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:my_secret_christmas/providers/christmas_card_provider.dart';
+import 'package:my_secret_christmas/sevices/ad_mob_service.dart';
 import 'steps/creation_steps/message_step.dart';
 import 'steps/creation_steps/card_selection_step.dart';
 import 'steps/creation_steps/hide_message_step.dart';
@@ -27,6 +29,13 @@ class StepInfo {
 
 class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
   int _currentStep = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // 광고 생성
+    _creatInterstitialAd();
+  }
 
   // 단계 정보 리스트
   final List<StepInfo> _steps = [
@@ -221,6 +230,7 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
       Navigator.pop(context);
     } else {
       ref.read(christmasCardProvider.notifier).resetCard();
+      ref.read(isHidingProvider.notifier).state = true;
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -230,6 +240,45 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
       requestReview();
       // openStoreListing();
     }
+  }
+
+  InterstitialAd? _interstitialAd;
+
+  // 전면 광고 생성
+  void _creatInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: AdMobService.interstitialAdUnitId!,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          // Called when an ad is successfully received.
+          onAdLoaded: (ad) {
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+                // Called when the ad showed the full screen content.
+                onAdShowedFullScreenContent: (ad) {},
+                // Called when an impression occurs on the ad.
+                onAdImpression: (ad) {},
+                // Called when the ad failed to show full screen content.
+                onAdFailedToShowFullScreenContent: (ad, err) {
+                  // Dispose the ad here to free resources.
+                  ad.dispose();
+                },
+                // Called when the ad dismissed full screen content.
+                onAdDismissedFullScreenContent: (ad) {
+                  // Dispose the ad here to free resources.
+                  ad.dispose();
+                },
+                // Called when a click is recorded for an ad.
+                onAdClicked: (ad) {});
+
+            debugPrint('$ad loaded.');
+            // Keep a reference to the ad so you can show it later.
+            _interstitialAd = ad;
+          },
+          // Called when an ad request failed.
+          onAdFailedToLoad: (LoadAdError error) {
+            debugPrint('InterstitialAd failed to load: $error');
+          },
+        ));
   }
 
   Future<void> requestReview() async {
@@ -391,6 +440,10 @@ class _WriteMessagePageState extends ConsumerState<WriteMessagePage> {
                                           if (!_validateFourthStep(
                                               cardState, context)) return;
                                           _moveToNextStep();
+                                          AppOpenAdManager.instance
+                                              .setInterstitialShown(); // 추가
+                                          //전면 광고 보여줌
+                                          _interstitialAd!.show();
                                           break;
 
                                         default:

@@ -145,7 +145,7 @@ class DecodeMessageModal extends StatelessWidget {
                             ChristmasCard mockChristmasCard = ChristmasCard(
                               sender: '산타',
                               content:
-                                  '올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!',
+                                  '올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년\n',
                               recipient: '루돌프',
                               cardImageUrl: 'assets/christmas_card.png',
                               quiz: mockQuiz,
