@@ -8,12 +8,14 @@ class MessageRevealPage extends StatefulWidget {
   final String sender;
   final String content;
   final String recipient;
+  final String cardImageUrl;
 
   const MessageRevealPage({
     super.key,
     required this.sender,
     required this.content,
     required this.recipient,
+    required this.cardImageUrl,
   });
 
   @override
@@ -25,7 +27,6 @@ class _MessageRevealPageState extends State<MessageRevealPage>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation_img;
   late Animation<double> _fadeAnimation_message;
-  String cardImageUrl = '';
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _MessageRevealPageState extends State<MessageRevealPage>
       duration: const Duration(seconds: 3),
       vsync: this,
     );
+    print(widget.cardImageUrl);
 
     _fadeAnimation_img = Tween<double>(
       begin: 1.0,
@@ -68,7 +70,7 @@ class _MessageRevealPageState extends State<MessageRevealPage>
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(cardImageUrl),
+            image: AssetImage(widget.cardImageUrl),
             fit: BoxFit.cover,
           ),
         ),
@@ -126,7 +128,7 @@ class _MessageRevealPageState extends State<MessageRevealPage>
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: Image.asset(
-                                        cardImageUrl,
+                                        widget.cardImageUrl,
                                         height: 500,
                                         width: double.infinity,
                                         fit: BoxFit.cover,

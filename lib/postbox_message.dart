@@ -6,12 +6,14 @@ class PostboxMessagePage extends StatefulWidget {
   final String sender;
   final String content;
   final String recipient;
+  final String cardImageUrl;
 
   const PostboxMessagePage({
     super.key,
     required this.sender,
     required this.content,
     required this.recipient,
+    required this.cardImageUrl,
   });
 
   @override
@@ -23,7 +25,6 @@ class _PostboxMessagePageState extends State<PostboxMessagePage>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation_img;
   late Animation<double> _fadeAnimation_message;
-  String cardImageUrl = '';
 
   @override
   void initState() {
@@ -66,7 +67,7 @@ class _PostboxMessagePageState extends State<PostboxMessagePage>
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(cardImageUrl),
+            image: AssetImage(widget.cardImageUrl),
             fit: BoxFit.cover,
           ),
         ),
@@ -124,7 +125,7 @@ class _PostboxMessagePageState extends State<PostboxMessagePage>
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: Image.asset(
-                                        cardImageUrl,
+                                        widget.cardImageUrl,
                                         height: 500,
                                         width: double.infinity,
                                         fit: BoxFit.cover,

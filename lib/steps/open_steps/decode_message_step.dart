@@ -28,6 +28,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
   String sender = '';
   String content = '';
   String recipient = '';
+  String cardImageUrl = '';
   String quiz_question = '';
   String quiz_hint1 = '';
   String quiz_hint2 = '';
@@ -41,6 +42,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
       sender = widget.cardData.sender ?? '';
       content = widget.cardData.content ?? '';
       recipient = widget.cardData.recipient ?? '';
+      cardImageUrl = widget.cardData.cardImageUrl ?? '';
       quiz_question = widget.cardData.quiz?.question ?? '';
       quiz_hint1 = widget.cardData.quiz?.hint1 ?? '';
       quiz_hint2 = widget.cardData.quiz?.hint2 ?? '';
@@ -62,6 +64,7 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
       sender: sender,
       content: content,
       recipient: recipient,
+      cardImageUrl: cardImageUrl,
     );
   }
 
@@ -363,7 +366,9 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                                 MessageRevealPage(
                                                     sender: sender,
                                                     content: content,
-                                                    recipient: recipient)),
+                                                    recipient: recipient,
+                                                    cardImageUrl:
+                                                        cardImageUrl)),
                                       );
                                     } else {
                                       // 오답일 경우 사용자에게 피드백 제공

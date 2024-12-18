@@ -5,12 +5,14 @@ class Message {
   final String sender;
   final String content;
   final String recipient;
+  final String cardImageUrl;
   //final String? timestamp; // 선택적으로 시간도 저장
 
   Message({
     required this.sender,
     required this.content,
     required this.recipient,
+    required this.cardImageUrl,
     //this.timestamp,
   });
 
@@ -19,15 +21,17 @@ class Message {
         'sender': sender,
         'content': content,
         'recipient': recipient,
+        'cardImageUrl': cardImageUrl,
         //'timestamp': timestamp ?? DateTime.now().toIso8601String(),
       };
 
   // Map에서 Message 객체로 변환
   factory Message.fromJson(Map<String, dynamic> json) => Message(
-        sender: json['sender'],
-        content: json['content'],
-        recipient: json['recipient'],
-        //timestamp: json['timestamp'],
+      sender: json['sender'] as String? ?? '', // null 체크 추가
+      content: json['content'] as String? ?? '',
+      recipient: json['recipient'] as String? ?? '',
+      cardImageUrl: json['cardImageUrl'] as String? ?? ''
+      //timestamp: json['timestamp'],
       );
 }
 
@@ -39,6 +43,7 @@ class MessagePreferences {
     required String sender,
     required String content,
     required String recipient,
+    required String cardImageUrl,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final messages = await loadMessages();
@@ -47,6 +52,7 @@ class MessagePreferences {
       sender: sender,
       content: content,
       recipient: recipient,
+      cardImageUrl: cardImageUrl,
       //timestamp: DateTime.now().toIso8601String(),
     ));
 
