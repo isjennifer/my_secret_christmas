@@ -1,5 +1,6 @@
 //main.dart 페이지
 import 'dart:async';
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -40,9 +41,7 @@ Future<void> main() async {
 
 // This widget is the root of your application.
 class MyApp extends StatefulWidget {
-  const MyApp({
-    super.key
-  });
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -51,12 +50,74 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final AudioService _audioService = AudioService();
   final CardEncryptionService _deepLinkHandler = CardEncryptionService();
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
 
   @override
   void initState() {
     super.initState();
     _initBackgroundMusic();
+    _initDeepLinking();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  Future<void> _initDeepLinking() async {
+    try {
+      _appLinks = AppLinks();
+
+      // 앱이 백그라운드에서 실행될 때의 링크 처리
+      final uri = await _appLinks.getInitialLink();
+      print("backgroundcall uri:$uri");
+      if (uri != null) {
+        _handleDeepLink(uri);
+      }
+
+      // 앱이 실행 중일 때의 링크 처리
+      _linkSubscription = _appLinks.uriLinkStream.listen(
+        (Uri? uri) {
+          print("uri: $uri");
+          if (uri != null) {
+            _handleDeepLink(uri);
+          }
+        },
+        onError: (err) {
+          print('Deep Link 에러: $err');
+        },
+      );
+
+      print("Deep Link 스트림 구독 설정 완료");
+      // 구독 상태 확인
+      if (_linkSubscription != null) {
+        print(
+            "Deep Link 스트림 구독 활성화 상태: ${!(_linkSubscription?.isPaused ?? true)}");
+      }
+    } catch (e, stackTrace) {
+      print('Deep Link 초기화 중 에러 발생: $e');
+      print('스택 트레이스: $stackTrace');
+    }
+  }
+
+  void _handleDeepLink(Uri uri) {
+    print('수신된 딥링크: $uri');
+
+    try {
+      if (uri.scheme == 'mySecretChristmas' && uri.host == 'decode') {
+        final cardData = uri.queryParameters['cardData'];
+        if (cardData != null) {
+          print('카드 데이터: $cardData');
+          // 여기서 카드 데이터를 처리하고 적절한 화면으로 이동
+          // 예: 디코딩 모달 표시
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            showDialog(
+              context: context,
+              builder: (context) => DecodeMessageModal(),
+            );
+          });
+        }
+      }
+    } catch (e) {
+      print('딥링크 처리 중 에러 발생: $e');
+    }
   }
 
   Future<void> _initBackgroundMusic() async {
@@ -77,6 +138,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         if (_audioService.isPlaying) {
           _audioService.play();
         }
+        print("앱이 포그라운드로 전환되었습니다.");
+        if (_linkSubscription != null) {
+          print(
+              "Deep Link 스트림 구독 활성화 상태: ${!(_linkSubscription?.isPaused ?? true)}");
+        }
         break;
       case AppLifecycleState.detached:
         // 앱이 완전히 종료될 때
@@ -92,6 +158,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     _audioService.stop();
     _audioService.dispose();
     _deepLinkHandler.dispose();
+    _linkSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
