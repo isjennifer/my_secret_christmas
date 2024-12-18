@@ -3,7 +3,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:my_secret_christmas/classes/message_preference.dart';
+import 'package:my_secret_christmas/sevices/ad_mob_service.dart';
 import 'package:my_secret_christmas/steps/open_steps/message_reveal_step.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 
@@ -44,6 +46,8 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
       quiz_hint2 = widget.cardData.quiz?.hint2 ?? '';
       quiz_answer = widget.cardData.quiz?.answer ?? '';
     });
+    // 광고 생성
+    _creatInterstitialAd();
   }
 
   @override
@@ -59,6 +63,45 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
       content: content,
       recipient: recipient,
     );
+  }
+
+  InterstitialAd? _interstitialAd;
+
+  // 전면 광고 생성
+  void _creatInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: AdMobService.interstitialAdUnitId!,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          // Called when an ad is successfully received.
+          onAdLoaded: (ad) {
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+                // Called when the ad showed the full screen content.
+                onAdShowedFullScreenContent: (ad) {},
+                // Called when an impression occurs on the ad.
+                onAdImpression: (ad) {},
+                // Called when the ad failed to show full screen content.
+                onAdFailedToShowFullScreenContent: (ad, err) {
+                  // Dispose the ad here to free resources.
+                  ad.dispose();
+                },
+                // Called when the ad dismissed full screen content.
+                onAdDismissedFullScreenContent: (ad) {
+                  // Dispose the ad here to free resources.
+                  ad.dispose();
+                },
+                // Called when a click is recorded for an ad.
+                onAdClicked: (ad) {});
+
+            debugPrint('$ad loaded.');
+            // Keep a reference to the ad so you can show it later.
+            _interstitialAd = ad;
+          },
+          // Called when an ad request failed.
+          onAdFailedToLoad: (LoadAdError error) {
+            debugPrint('InterstitialAd failed to load: $error');
+          },
+        ));
   }
 
   @override
@@ -307,7 +350,10 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                     });
 
                                     if (isCorrect) {
+                                      //받은 메시지함에 저장
                                       saveMessage();
+                                      //전면 광고 보여줌
+                                      _interstitialAd!.show();
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
@@ -24,6 +25,8 @@ Future<void> main() async {
   // }
   // ;
   WidgetsFlutterBinding.ensureInitialized();
+  // 구글 애드 초기화
+  MobileAds.instance.initialize();
 
   // KakaoSdk 초기화
   KakaoSdk.init(
