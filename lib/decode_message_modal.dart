@@ -1,6 +1,7 @@
 // lib/widgets/decode_message_modal.dart
 
 import 'package:flutter/material.dart';
+import 'package:my_secret_christmas/sevices/card_encryption_service.dart';
 import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 
@@ -20,14 +21,47 @@ class _DecodeMessageModalState extends State<DecodeMessageModal> {
     super.dispose();
   }
 
-  void _handleSubmit() {
-    if (_controller.text.isEmpty) return;
+  void _handleSubmit([String? value]) {
+    final textValue = value ?? _controller.text;
+    if (textValue.isEmpty) return;
 
-    // 여기에 제출 로직 구현
-    print('제출된 메시지: ${_controller.text}');
+    try {
+      // 복호화된 카드 데이터 받기
+      ChristmasCard decryptedCard =
+          CardEncryptionService.decryptToCard(textValue);
 
-    // 입력 필드 초기화
-    _controller.clear();
+      // 카드 데이터 출력
+      print('복호화된 카드 정보:');
+      print('보낸사람: ${decryptedCard.sender}');
+      print('받는사람: ${decryptedCard.recipient}');
+      print('내용: ${decryptedCard.content}');
+      print('카드 이미지: ${decryptedCard.cardImageUrl}');
+
+      // 퀴즈가 있다면 퀴즈 정보도 출력
+      if (decryptedCard.quiz != null) {
+        print('퀴즈 질문: ${decryptedCard.quiz!.question}');
+        print('퀴즈 답변: ${decryptedCard.quiz!.answer}');
+        print('힌트1: ${decryptedCard.quiz!.hint1}');
+        print('힌트2: ${decryptedCard.quiz!.hint2}');
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DecodeMessagePage(cardData: decryptedCard)),
+      );
+
+      // 입력 필드 초기화
+      _controller.clear();
+    } catch (e) {
+      print('오류 발생: $e');
+      // 여기에 사용자에게 오류를 알리는 로직을 추가할 수 있습니다.
+      // 예: ScaffoldMessenger를 사용한 스낵바 표시
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('메시지 풀기에 실패했어요! 올바른 코드인지 확인해주세요.'),
+        ),
+      );
+    }
   }
 
   @override
@@ -83,81 +117,91 @@ class _DecodeMessageModalState extends State<DecodeMessageModal> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
-                        Row(
+                        Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.stretch, // 가로로 최대한 늘리기
                           children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _controller,
-                                decoration: InputDecoration(
-                                  hintText: '코드를 입력하세요',
-                                  contentPadding: const EdgeInsets.all(16),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
+                            TextField(
+                              controller: _controller,
+                              maxLines: 3, // 입력 칸 높이 증가
+                              decoration: InputDecoration(
+                                hintText: '코드를 입력하세요',
+                                contentPadding: const EdgeInsets.all(16),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                                onSubmitted: (_) => _handleSubmit(),
                               ),
+                              onSubmitted: (value) => _handleSubmit(value),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(height: 16), // 버튼과의 간격
                             ElevatedButton(
                               onPressed: _handleSubmit,
-                              child: const Text('제출'),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 16), // 버튼 높이 증가
+                              ),
+                              child: const Text(
+                                '제출',
+                                style: TextStyle(
+                                  fontSize: 16, // 버튼 텍스트 크기 증가
+                                ),
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 12),
                         // 테스트 버튼
-                        ElevatedButton(
-                          onPressed: () {
-                            // 퀴즈 객체 생성
-                            Quiz mockQuiz = Quiz(
-                              question: '산타의 썰매를 끄는 루돌프의 코 색깔은?',
-                              answer: '빨간색',
-                              hint1: '어두운 밤길을 환하게 밝혀주는 색이에요',
-                              hint2: '신호등에서 멈춤을 의미하는 색이에요',
-                            );
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     // 퀴즈 객체 생성
+                        //     Quiz mockQuiz = Quiz(
+                        //       question: '산타의 썰매를 끄는 루돌프의 코 색깔은?',
+                        //       answer: '빨간색',
+                        //       hint1: '어두운 밤길을 환하게 밝혀주는 색이에요',
+                        //       hint2: '신호등에서 멈춤을 의미하는 색이에요',
+                        //     );
 
-                            // 크리스마스 카드 객체 생성
-                            ChristmasCard mockChristmasCard = ChristmasCard(
-                              sender: '산타',
-                              content:
-                                  '올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년\n',
-                              recipient: '루돌프',
-                              cardImageUrl: 'assets/christmas_card.png',
-                              quiz: mockQuiz,
-                            );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DecodeMessagePage(
-                                      cardData: mockChristmasCard)),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 24,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(width: 8),
-                              Text(
-                                '테스트 버튼',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        //     // 크리스마스 카드 객체 생성
+                        //     ChristmasCard mockChristmasCard = ChristmasCard(
+                        //       sender: '산타',
+                        //       content:
+                        //           '올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년\n',
+                        //       recipient: '루돌프',
+                        //       cardImageUrl: 'assets/christmas_card.png',
+                        //       quiz: mockQuiz,
+                        //     );
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //           builder: (context) => DecodeMessagePage(
+                        //               cardData: mockChristmasCard)),
+                        //     );
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     backgroundColor: Colors.green,
+                        //     foregroundColor: Colors.white,
+                        //     padding: const EdgeInsets.symmetric(
+                        //       vertical: 16,
+                        //       horizontal: 24,
+                        //     ),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(8),
+                        //     ),
+                        //   ),
+                        //   child: const Row(
+                        //     mainAxisAlignment: MainAxisAlignment.center,
+                        //     children: [
+                        //       SizedBox(width: 8),
+                        //       Text(
+                        //         '테스트 버튼',
+                        //         style: TextStyle(
+                        //           fontSize: 16,
+                        //           fontWeight: FontWeight.bold,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
