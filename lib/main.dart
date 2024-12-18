@@ -1,6 +1,7 @@
 //main.dart 페이지
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -8,6 +9,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
 import 'package:my_secret_christmas/postbox_page.dart';
+import 'package:my_secret_christmas/sevices/ad_mob_service.dart';
 import 'package:my_secret_christmas/sevices/deep_link_service.dart';
 import 'write_message.dart';
 import './widgets/snowflake.dart';
@@ -26,7 +28,18 @@ Future<void> main() async {
   // ;
   WidgetsFlutterBinding.ensureInitialized();
   // 구글 애드 초기화
-  MobileAds.instance.initialize();
+  await MobileAds.instance.initialize();
+  // 앱 열기 광고 로드
+  final appOpenAdManager = AppOpenAdManager();
+  await appOpenAdManager.loadAppOpenAd();
+
+  // 앱이 포그라운드로 돌아올 때 광고 표시
+  SystemChannels.lifecycle.setMessageHandler((message) async {
+    if (message?.contains('resumed') ?? false) {
+      appOpenAdManager.showAdIfAvailable();
+    }
+    return null;
+  });
 
   // KakaoSdk 초기화
   KakaoSdk.init(
@@ -146,14 +159,18 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // 2초 후에 스플래시 이미지로 전환
     Timer(const Duration(seconds: 2), () {
       setState(() {
         _showLogo = false; // 로고를 숨기고 스플래시 이미지를 보여줍니다
       });
 
-      // 추가로 1초 후에 메인 페이지로 이동
+      // 추가로 1초 후에 메인 페이지로 이동하고 광고 표시
       Timer(const Duration(seconds: 2), () {
+        // 광고 표시
+        final appOpenAdManager = AppOpenAdManager();
+        appOpenAdManager.showAdIfAvailable();
+
+        // 메인 페이지로 이동
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => MyHomePage(title: 'Merry Secret Christmas'),

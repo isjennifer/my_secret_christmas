@@ -352,6 +352,8 @@ class _DecodeMessagePageState extends State<DecodeMessagePage> {
                                     if (isCorrect) {
                                       //받은 메시지함에 저장
                                       saveMessage();
+                                      AppOpenAdManager.instance
+                                          .setInterstitialShown(); // 추가
                                       //전면 광고 보여줌
                                       _interstitialAd!.show();
                                       Navigator.push(
