@@ -305,236 +305,236 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
                 ),
               ),
               const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () async {
-                  // 카드 데이터 읽기
-                  final cardData = ref.read(christmasCardProvider);
-                  // 암호화된 문자열 생성
-                  final endcodedString = CardEncryptionService.encryptCard(card: cardData);
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     // 카드 데이터 읽기
+              //     final cardData = ref.read(christmasCardProvider);
+              //     // 암호화된 문자열 생성
+              //     final endcodedString = CardEncryptionService.encryptCard(card: cardData);
 
-                  try {
-                    // 복사 성공 시 모달 표시
-                    if (context.mounted) {
-                      await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(24),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // 헤더
-                                  Row(
-                                    children: [
-                                      const Text(
-                                        '인스타그램 공유하기',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 24),
+              //     try {
+              //       // 복사 성공 시 모달 표시
+              //       if (context.mounted) {
+              //         await showDialog(
+              //           context: context,
+              //           builder: (BuildContext context) {
+              //             return Dialog(
+              //               shape: RoundedRectangleBorder(
+              //                 borderRadius: BorderRadius.circular(16),
+              //               ),
+              //               child: Container(
+              //                 padding: const EdgeInsets.all(24),
+              //                 child: Column(
+              //                   mainAxisSize: MainAxisSize.min,
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: [
+              //                     // 헤더
+              //                     Row(
+              //                       children: [
+              //                         const Text(
+              //                           '인스타그램 공유하기',
+              //                           style: TextStyle(
+              //                             fontSize: 20,
+              //                             fontWeight: FontWeight.bold,
+              //                           ),
+              //                         ),
+              //                       ],
+              //                     ),
+              //                     const SizedBox(height: 24),
 
-                                  // 안내 컨테이너 1
-                                  Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        left: BorderSide(
-                                          color: Colors.pink.shade300,
-                                          width: 4,
-                                        ),
-                                      ),
-                                      color: Colors.pink.shade50,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: const [
-                                            Icon(Icons.copy,
-                                                size: 18, color: Colors.pink),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              'URL 복사하기',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.pink,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        const Text('내가 작성한 메시지의 URL을 복사해주세요.'),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
+              //                     // 안내 컨테이너 1
+              //                     Container(
+              //                       padding: const EdgeInsets.all(16),
+              //                       decoration: BoxDecoration(
+              //                         border: Border(
+              //                           left: BorderSide(
+              //                             color: Colors.pink.shade300,
+              //                             width: 4,
+              //                           ),
+              //                         ),
+              //                         color: Colors.pink.shade50,
+              //                         borderRadius: BorderRadius.circular(8),
+              //                       ),
+              //                       child: Column(
+              //                         crossAxisAlignment:
+              //                             CrossAxisAlignment.start,
+              //                         children: [
+              //                           Row(
+              //                             children: const [
+              //                               Icon(Icons.copy,
+              //                                   size: 18, color: Colors.pink),
+              //                               SizedBox(width: 8),
+              //                               Text(
+              //                                 'URL 복사하기',
+              //                                 style: TextStyle(
+              //                                   fontWeight: FontWeight.bold,
+              //                                   color: Colors.pink,
+              //                                 ),
+              //                               ),
+              //                             ],
+              //                           ),
+              //                           const SizedBox(height: 8),
+              //                           const Text('내가 작성한 메시지의 URL을 복사해주세요.'),
+              //                         ],
+              //                       ),
+              //                     ),
+              //                     const SizedBox(height: 16),
 
-                                  // 안내 컨테이너 2
-                                  Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        left: BorderSide(
-                                          color: Colors.pink.shade300,
-                                          width: 4,
-                                        ),
-                                      ),
-                                      color: Colors.pink.shade50,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: const [
-                                            Icon(Icons.edit_square,
-                                                size: 18, color: Colors.pink),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              '스토리에 공유하기',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.pink,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        const Text(
-                                            '인스타그램 스토리 작성시, 링크 스티커를 이용해 붙여넣어주세요.'),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
+              //                     // 안내 컨테이너 2
+              //                     Container(
+              //                       padding: const EdgeInsets.all(16),
+              //                       decoration: BoxDecoration(
+              //                         border: Border(
+              //                           left: BorderSide(
+              //                             color: Colors.pink.shade300,
+              //                             width: 4,
+              //                           ),
+              //                         ),
+              //                         color: Colors.pink.shade50,
+              //                         borderRadius: BorderRadius.circular(8),
+              //                       ),
+              //                       child: Column(
+              //                         crossAxisAlignment:
+              //                             CrossAxisAlignment.start,
+              //                         children: [
+              //                           Row(
+              //                             children: const [
+              //                               Icon(Icons.edit_square,
+              //                                   size: 18, color: Colors.pink),
+              //                               SizedBox(width: 8),
+              //                               Text(
+              //                                 '스토리에 공유하기',
+              //                                 style: TextStyle(
+              //                                   fontWeight: FontWeight.bold,
+              //                                   color: Colors.pink,
+              //                                 ),
+              //                               ),
+              //                             ],
+              //                           ),
+              //                           const SizedBox(height: 8),
+              //                           const Text(
+              //                               '인스타그램 스토리 작성시, 링크 스티커를 이용해 붙여넣어주세요.'),
+              //                         ],
+              //                       ),
+              //                     ),
+              //                     const SizedBox(height: 24),
 
-                                  // 버튼 영역
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      TextButton.icon(
-                                        onPressed: () {
-                                          Clipboard.setData(
-                                              ClipboardData(text: endcodedString));
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text(
-                                                    'URL이 클립보드에 복사되었습니다.')),
-                                          );
-                                        },
-                                        icon: const Icon(Icons.copy,
-                                            color: Colors.pink),
-                                        label: const Text(
-                                          'URL 복사',
-                                          style: TextStyle(color: Colors.pink),
-                                        ),
-                                        style: TextButton.styleFrom(
-                                          backgroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 12,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                8), // 모서리 둥글기
-                                            side: BorderSide(
-                                              color: Colors.pink, // 테두리 색상
-                                              width: 1.0, // 테두리 두께
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      TextButton.icon(
-                                        onPressed: () {
-                                          shareToInstagram();
-                                        },
-                                        icon: const Icon(Icons.edit_square,
-                                            color: Colors.white),
-                                        label: const Text(
-                                          '스토리 작성',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        style: TextButton.styleFrom(
-                                          backgroundColor: Colors.pink,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }
-                  } catch (e) {
-                    // 에러 처리
-                    if (context.mounted) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('오류'),
-                            content: Text('링크 복사 중 문제가 발생했습니다.'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: Text('확인'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE4405F),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 24,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image(
-                      image: AssetImage('assets/instagram.png'),
-                      width: 26,
-                      height: 26,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      '인스타그램 스토리 공유하기',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              //                     // 버튼 영역
+              //                     Row(
+              //                       mainAxisAlignment: MainAxisAlignment.center,
+              //                       children: [
+              //                         TextButton.icon(
+              //                           onPressed: () {
+              //                             Clipboard.setData(
+              //                                 ClipboardData(text: endcodedString));
+              //                             ScaffoldMessenger.of(context)
+              //                                 .showSnackBar(
+              //                               const SnackBar(
+              //                                   content: Text(
+              //                                       'URL이 클립보드에 복사되었습니다.')),
+              //                             );
+              //                           },
+              //                           icon: const Icon(Icons.copy,
+              //                               color: Colors.pink),
+              //                           label: const Text(
+              //                             'URL 복사',
+              //                             style: TextStyle(color: Colors.pink),
+              //                           ),
+              //                           style: TextButton.styleFrom(
+              //                             backgroundColor: Colors.white,
+              //                             padding: const EdgeInsets.symmetric(
+              //                               horizontal: 16,
+              //                               vertical: 12,
+              //                             ),
+              //                             shape: RoundedRectangleBorder(
+              //                               borderRadius: BorderRadius.circular(
+              //                                   8), // 모서리 둥글기
+              //                               side: BorderSide(
+              //                                 color: Colors.pink, // 테두리 색상
+              //                                 width: 1.0, // 테두리 두께
+              //                               ),
+              //                             ),
+              //                           ),
+              //                         ),
+              //                         const SizedBox(width: 12),
+              //                         TextButton.icon(
+              //                           onPressed: () {
+              //                             shareToInstagram();
+              //                           },
+              //                           icon: const Icon(Icons.edit_square,
+              //                               color: Colors.white),
+              //                           label: const Text(
+              //                             '스토리 작성',
+              //                             style: TextStyle(color: Colors.white),
+              //                           ),
+              //                           style: TextButton.styleFrom(
+              //                             backgroundColor: Colors.pink,
+              //                             padding: const EdgeInsets.symmetric(
+              //                               horizontal: 16,
+              //                               vertical: 12,
+              //                             ),
+              //                           ),
+              //                         ),
+              //                       ],
+              //                     ),
+              //                   ],
+              //                 ),
+              //               ),
+              //             );
+              //           },
+              //         );
+              //       }
+              //     } catch (e) {
+              //       // 에러 처리
+              //       if (context.mounted) {
+              //         showDialog(
+              //           context: context,
+              //           builder: (BuildContext context) {
+              //             return AlertDialog(
+              //               title: Text('오류'),
+              //               content: Text('링크 복사 중 문제가 발생했습니다.'),
+              //               actions: [
+              //                 TextButton(
+              //                   onPressed: () => Navigator.of(context).pop(),
+              //                   child: Text('확인'),
+              //                 ),
+              //               ],
+              //             );
+              //           },
+              //         );
+              //       }
+              //     }
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: const Color(0xFFE4405F),
+              //     foregroundColor: Colors.white,
+              //     padding: const EdgeInsets.symmetric(
+              //       vertical: 16,
+              //       horizontal: 24,
+              //     ),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(8),
+              //     ),
+              //   ),
+              //   child: const Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       Image(
+              //         image: AssetImage('assets/instagram.png'),
+              //         width: 26,
+              //         height: 26,
+              //       ),
+              //       SizedBox(width: 8),
+              //       Text(
+              //         '인스타그램 스토리 공유하기',
+              //         style: TextStyle(
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         ),
