@@ -4,6 +4,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:url_launcher/url_launcher.dart';
 
 class CardEncryptionService {
   // 암호화 관련 상수
@@ -13,7 +14,8 @@ class CardEncryptionService {
   static const String androidPlayStoreUrl =
       'https://play.google.com/store/apps/details?id=com.example.myapp';
   // static const String iOSAppStoreUrl = 'https://apps.apple.com';
-  static const String iOSAppStoreUrl = 'https://apps.apple.com/app/instagram/id389801252';
+  static const String iOSAppStoreUrl =
+      'https://apps.apple.com/app/instagram/id389801252';
   //app/id123456789
 
   // 고정 IV (16바이트)
@@ -27,16 +29,16 @@ class CardEncryptionService {
       print('암호화된 카드 DATA: $encryptedData');
 
       final template = TextTemplate(
-        text:  encryptedData,
+        text: '앱을 열고 메시지 풀기 버튼을 눌러 아래 코드를 복사해 붙여넣기 해주세요! $encryptedData',
         link: Link(
-              webUrl: Uri.parse(iOSAppStoreUrl),
-              mobileWebUrl: Uri.parse(iOSAppStoreUrl),
-            ),
+          webUrl: Uri.parse(iOSAppStoreUrl),
+          mobileWebUrl: Uri.parse(iOSAppStoreUrl),
+        ),
         buttons: [
           Button(
             title: '앱 열기',
             link: Link(
-              iosExecutionParams: {'cardData': encryptedData},  
+              iosExecutionParams: {'cardData': encryptedData},
             ),
           ),
           Button(
@@ -61,6 +63,9 @@ class CardEncryptionService {
         await CollectionPage.incrementCount();
         print('카카오톡 공유 완료!');
       } else {
+        //카카오톡 설치페이지로 이동
+        launchUrl(
+            Uri.parse('https://apps.apple.com/app/kakaotalk/id362057947'));
         print('카카오톡 미설치: 웹 공유 기능 사용 권장');
       }
     } catch (error) {
@@ -74,7 +79,6 @@ class CardEncryptionService {
       // 암호화 키 설정 (32바이트)
       final key = encrypt.Key.fromUtf8(_secretKey.padRight(32, '0'));
       final encrypter = encrypt.Encrypter(encrypt.AES(key));
-
 
       // 카드 데이터를 JSON으로 변환
       final String cardJson = jsonEncode(card.toJson());
@@ -90,7 +94,7 @@ class CardEncryptionService {
   }
 
   /// 암호화된 데이터를 복호화하여 카드 객체로 변환하는 메서드
-  static ChristmasCard decryptToCard(String encryptedData, String ivString) {
+  static ChristmasCard decryptToCard(String encryptedData) {
     try {
       // 암호화 키 설정 (32바이트)
       final key = encrypt.Key.fromUtf8(_secretKey.padRight(32, '0'));
