@@ -64,7 +64,7 @@ class AppOpenAdManager {
       _wasInterstitialShown = false;
       return;
     }
-
+    if (!_isFirstLaunch) return; // 첫 실행이 아니면 표시하지 않음
     if (!isLoaded) {
       loadAppOpenAd();
       return;
