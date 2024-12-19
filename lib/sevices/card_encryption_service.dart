@@ -11,7 +11,7 @@ class CardEncryptionService {
       'https://play.google.com/store/apps/details?id=com.example.myapp';
   // static const String iOSAppStoreUrl = 'https://apps.apple.com';
   static const String iOSAppStoreUrl =
-      'https://apps.apple.com/app/instagram/id389801252';
+      'https://apps.apple.com/app/secretsmas/id6739515946';
   //app/id123456789
 
   // IV를 고정된 값으로 설정

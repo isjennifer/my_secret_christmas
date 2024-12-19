@@ -20,7 +20,7 @@ class AppLinksService {
 
   // 임시 앱스토어 링크
   static const String iOSAppStoreUrl =
-      'https://apps.apple.com/app/instagram/id389801252';
+      'https://apps.apple.com/app/secretsmas/id6739515946';
   // 구독을 저장하기 위한 변수
   StreamSubscription<Uri>? _linkSubscription;
 

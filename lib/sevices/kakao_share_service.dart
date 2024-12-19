@@ -14,7 +14,7 @@ class KakaoShareService {
   static const String androidPlayStoreUrl =
       'https://play.google.com/store/apps/details?id=com.example.myapp';
   static const String iOSAppStoreUrl =
-      'https://apps.apple.com/app/instagram/id389801252';
+      'https://apps.apple.com/app/secretsmas/id6739515946';
 
   Future<void> shareToKakao({required ChristmasCard card}) async {
     try {
