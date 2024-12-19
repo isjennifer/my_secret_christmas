@@ -1,9 +1,11 @@
 // lib/widgets/decode_message_modal.dart
 
 import 'package:flutter/material.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:my_secret_christmas/sevices/card_encryption_service.dart';
 import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DecodeMessageModal extends StatefulWidget {
   const DecodeMessageModal({super.key});
@@ -119,7 +121,23 @@ class _DecodeMessageModalState extends State<DecodeMessageModal> {
                     child: Column(
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            try {
+                              final kakaoTalkUri =
+                                  Uri.parse('kakaolink://launch');
+                              if (await canLaunchUrl(kakaoTalkUri)) {
+                                await launchUrl(kakaoTalkUri);
+                                print('카카오톡 열기');
+                              } else {
+                                print('카카오톡 미설치: 설치페이지로 이동');
+                                final storeUri = Uri.parse(
+                                    'https://apps.apple.com/app/kakaotalk/id362057947');
+                                await launchUrl(storeUri);
+                              }
+                            } catch (e) {
+                              print('카카오톡 열기 에러 발생: $e');
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFFE812),
                             foregroundColor: Colors.black,
