@@ -65,7 +65,7 @@ class _MessageStepState extends ConsumerState<MessageStep> {
             labelText: '크리스마스 메시지를 작성해주세요!',
             border: OutlineInputBorder(),
           ),
-          maxLength: 200,
+          maxLength: 70,
           onChanged: (value) {
             ref.read(christmasCardProvider.notifier).updateContent(value);
           },
