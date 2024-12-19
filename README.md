@@ -1,16 +1,15 @@
-# my_secret_christmas
+# 시크릿스마스 (secretsmas)
 
-A new Flutter project.
+이 앱은 크리스마스 메시지를 주고 받는 앱입니다.
 
-## Getting Started
+메시지는 숨겨진 상태로 전송되며, 보내는 사람이 출제한 퀴즈를 풀어야 메시지를 볼 수 있습니다.
 
-This project is a starting point for a Flutter application.
+** iOS 전용 앱으로, 현재 Android에서는 지원되지 않습니다. **
 
-A few resources to get you started if this is your first Flutter project:
+앱 다운 링크 : https://apps.apple.com/app/secretsmas/id6739515946
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+리브앤퀘스트의 첫번째 프로젝트 앱 입니다.
+Copyright 2024. Live&Quest Co. All rights reserved.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+E-mail 1: tjdgk3575@naver.com
+E-mail 2: dunthedev@gmail.com
