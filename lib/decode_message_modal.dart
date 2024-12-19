@@ -107,79 +107,22 @@ class _DecodeMessageModalState extends State<DecodeMessageModal> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
+                  const SizedBox(height: 10),
                   const Text(
-                    '나에게 전송된 시크릿 메시지의\n고유코드를 입력해주세요.',
+                    '카카오톡을 열고,\n내가 받은 시크릿 메시지에서\n\'메시지 풀기\' 버튼을 눌러주세요!',
                     style: TextStyle(fontSize: 18),
-                    textAlign: TextAlign.center,
+                    // textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
-                        Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.stretch, // 가로로 최대한 늘리기
-                          children: [
-                            TextField(
-                              controller: _controller,
-                              maxLines: 3, // 입력 칸 높이 증가
-                              decoration: InputDecoration(
-                                hintText: '코드를 입력하세요',
-                                contentPadding: const EdgeInsets.all(16),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                              onSubmitted: (value) => _handleSubmit(value),
-                            ),
-                            const SizedBox(height: 16), // 버튼과의 간격
-                            ElevatedButton(
-                              onPressed: _handleSubmit,
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 16), // 버튼 높이 증가
-                              ),
-                              child: const Text(
-                                '제출',
-                                style: TextStyle(
-                                  fontSize: 16, // 버튼 텍스트 크기 증가
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        //테스트 버튼
                         ElevatedButton(
-                          onPressed: () {
-                            // 퀴즈 객체 생성
-                            Quiz mockQuiz = Quiz(
-                              question: '산타의 썰매를 끄는 루돌프의 코 색깔은?',
-                              answer: '빨간색',
-                              hint1: '어두운 밤길을 환하게 밝혀주는 색이에요',
-                              hint2: '신호등에서 멈춤을 의미하는 색이에요',
-                            );
-
-                            // 크리스마스 카드 객체 생성
-                            ChristmasCard mockChristmasCard = ChristmasCard(
-                              sender: '산타',
-                              content:
-                                  '올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도ㅗ오ㅗ오ㅗ오ㅘ하ㅏ라ㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏ\n',
-                              recipient: '루돌프',
-                              cardImageUrl: 'assets/cards/card1.jpg',
-                              quiz: mockQuiz,
-                            );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DecodeMessagePage(
-                                      cardData: mockChristmasCard)),
-                            );
-                          },
+                          onPressed: () {},
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
+                            backgroundColor: const Color(0xFFFFE812),
+                            foregroundColor: Colors.black,
                             padding: const EdgeInsets.symmetric(
                               vertical: 16,
                               horizontal: 24,
@@ -191,9 +134,14 @@ class _DecodeMessageModalState extends State<DecodeMessageModal> {
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              Image(
+                                image: AssetImage('assets/kakao.png'),
+                                width: 26,
+                                height: 26,
+                              ),
                               SizedBox(width: 8),
                               Text(
-                                '테스트 버튼',
+                                '카카오톡 열기',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -202,6 +150,59 @@ class _DecodeMessageModalState extends State<DecodeMessageModal> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        //테스트 버튼
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     // 퀴즈 객체 생성
+                        //     Quiz mockQuiz = Quiz(
+                        //       question: '산타의 썰매를 끄는 루돌프의 코 색깔은?',
+                        //       answer: '빨간색',
+                        //       hint1: '어두운 밤길을 환하게 밝혀주는 색이에요',
+                        //       hint2: '신호등에서 멈춤을 의미하는 색이에요',
+                        //     );
+
+                        //     // 크리스마스 카드 객체 생성
+                        //     ChristmasCard mockChristmasCard = ChristmasCard(
+                        //       sender: '산타',
+                        //       content:
+                        //           '올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도 행복한 일만 가득하길 바랄게요. 메리 크리스마스!\n올해도 수고 많았어요! 내년에도ㅗ오ㅗ오ㅗ오ㅘ하ㅏ라ㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏ\n',
+                        //       recipient: '루돌프',
+                        //       cardImageUrl: 'assets/cards/card1.jpg',
+                        //       quiz: mockQuiz,
+                        //     );
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //           builder: (context) => DecodeMessagePage(
+                        //               cardData: mockChristmasCard)),
+                        //     );
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     backgroundColor: Colors.green,
+                        //     foregroundColor: Colors.white,
+                        //     padding: const EdgeInsets.symmetric(
+                        //       vertical: 16,
+                        //       horizontal: 24,
+                        //     ),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(8),
+                        //     ),
+                        //   ),
+                        //   child: const Row(
+                        //     mainAxisAlignment: MainAxisAlignment.center,
+                        //     children: [
+                        //       SizedBox(width: 8),
+                        //       Text(
+                        //         '테스트 버튼',
+                        //         style: TextStyle(
+                        //           fontSize: 16,
+                        //           fontWeight: FontWeight.bold,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
