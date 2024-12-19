@@ -23,14 +23,16 @@ class KakaoShareService {
 
       final template = FeedTemplate(
         content: Content(
-          title: '앱을 열고 메시지 풀기 버튼을 눌러 아래 코드를 복사해 붙여넣기 해주세요!',
+          title: '당신을 위한 시크릿 크리스마스 메시지가 도착했어요!',
+          description: '메시지 풀기 버튼을 눌러 크리스마스 메시지를 확인하세요!',
+          imageUrl: Uri.parse('https://i.ibb.co/6XyrR0V/Secretsmas.png'),
           link: Link(
             iosExecutionParams: {'cardData': encryptedData, 'path': "decode"},
           ),
         ),
         buttons: [
           Button(
-            title: '앱 열기',
+            title: '메시지 풀기',
             link: Link(
               iosExecutionParams: {'cardData': encryptedData, 'path': "decode"},
             ),
