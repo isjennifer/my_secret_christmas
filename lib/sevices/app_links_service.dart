@@ -9,6 +9,7 @@ import 'package:my_secret_christmas/classes/routes.dart';
 import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:my_secret_christmas/sevices/card_encryption_service.dart';
 import 'package:my_secret_christmas/sevices/navigation_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppLinksService {
   static final AppLinksService _instance = AppLinksService._internal();
@@ -17,6 +18,9 @@ class AppLinksService {
 
   final _appLinks = AppLinks();
 
+  // 임시 앱스토어 링크
+  static const String iOSAppStoreUrl =
+      'https://apps.apple.com/app/instagram/id389801252';
   // 구독을 저장하기 위한 변수
   StreamSubscription<Uri>? _linkSubscription;
 
@@ -75,6 +79,7 @@ class AppLinksService {
 
       default:
         debugPrint('Unknown deep link path: ${uri.path}');
+        launchUrl(Uri.parse(iOSAppStoreUrl));
     }
   }
 }
