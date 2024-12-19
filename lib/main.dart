@@ -6,11 +6,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:my_secret_christmas/classes/routes.dart';
 import 'package:my_secret_christmas/collection_page.dart';
 import 'package:my_secret_christmas/decode_message_modal.dart';
+import 'package:my_secret_christmas/models/christmas_card.dart';
 import 'package:my_secret_christmas/postbox_page.dart';
 import 'package:my_secret_christmas/sevices/ad_mob_service.dart';
+import 'package:my_secret_christmas/sevices/app_links_service.dart';
 import 'package:my_secret_christmas/sevices/card_encryption_service.dart';
+import 'package:my_secret_christmas/sevices/navigation_service.dart';
+import 'package:my_secret_christmas/steps/open_steps/decode_message_step.dart';
 import 'write_message.dart';
 import './widgets/snowflake.dart';
 import './widgets/snow_theme.dart';
@@ -41,6 +46,9 @@ Future<void> main() async {
     return null;
   });
 
+  // AppLinks 서비스 초기화
+  await AppLinksService().init();
+
   // KakaoSdk 초기화
   KakaoSdk.init(
     nativeAppKey: 'decf946daaaa80724532096b84f512cb',
@@ -64,7 +72,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final AudioService _audioService = AudioService();
-  final CardEncryptionService _deepLinkHandler = CardEncryptionService();
+  final CardEncryptionService _cardEncryptService = CardEncryptionService();
 
   @override
   void initState() {
@@ -94,7 +102,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         break;
       case AppLifecycleState.detached:
         // 앱이 완전히 종료될 때
-        _deepLinkHandler.dispose();
+        _cardEncryptService.dispose();
         break;
       default:
         break;
@@ -105,7 +113,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void dispose() {
     _audioService.stop();
     _audioService.dispose();
-    _deepLinkHandler.dispose();
+    _cardEncryptService.dispose();
+    AppLinksService().dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -115,6 +124,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return SnowTheme(
       showSnow: true, // 눈 효과 켜기/끄기 제어
       child: MaterialApp(
+        navigatorKey: NavigationService().navigatorKey,
+        onGenerateRoute: Routes.onGenerateRoute,
         title: 'Merry Secret Christmas',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(

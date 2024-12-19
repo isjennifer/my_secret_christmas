@@ -83,10 +83,10 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>myapp</string>
+				<string>mySecretChristmas</string>
 			</array>
 			<key>CFBundleURLName</key>
-        <string>com.example.myapp</string>
+        <string>com.example.mySecretChristmas</string>
     </dict>
 	</array>
 

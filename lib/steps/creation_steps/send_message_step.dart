@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_secret_christmas/providers/christmas_card_provider.dart';
 import 'package:my_secret_christmas/sevices/card_encryption_service.dart';
 import 'package:my_secret_christmas/collection_page.dart';
+import 'package:my_secret_christmas/sevices/kakao_share_service.dart';
 import 'dart:io';
 import 'package:social_share/social_share.dart';
 import 'package:path_provider/path_provider.dart';
@@ -244,7 +245,7 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
                                     child: TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
-                                        CardEncryptionService()
+                                        KakaoShareService()
                                             .shareToKakao(card: cardData);
                                       },
                                       style: TextButton.styleFrom(

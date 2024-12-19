@@ -24,12 +24,17 @@ import FacebookCore
         open url: URL,
         options: [UIApplication.OpenURLOptionsKey : Any] = [:]
     ) -> Bool {
-        // Facebook SDK의 URL 처리
-        return ApplicationDelegate.shared.application(
-            app,
-            open: url,
-            sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-            annotation: options[UIApplication.OpenURLOptionsKey.annotation]
-        )
+            // Facebook URL인 경우
+        if url.scheme?.hasPrefix("fb") == true {
+            return ApplicationDelegate.shared.application(
+                app,
+                open: url,
+                sourceApplication: options[.sourceApplication] as? String,
+                annotation: options[.annotation]
+            )
+        }
+        
+        // Facebook URL이 아닌 경우 Flutter(app_links)로 처리 위임
+        return super.application(app, open: url, options: options)
     }
 }
