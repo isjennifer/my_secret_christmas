@@ -32,6 +32,11 @@ Future<void> main() async {
   // }
   // ;
   WidgetsFlutterBinding.ensureInitialized();
+  // 가로 모드 제한
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   // 구글 애드 초기화
   await MobileAds.instance.initialize();
   // 앱 열기 광고 로드
