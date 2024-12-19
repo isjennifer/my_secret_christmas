@@ -25,8 +25,7 @@ class KakaoShareService {
         content: Content(
           title: '앱을 열고 메시지 풀기 버튼을 눌러 아래 코드를 복사해 붙여넣기 해주세요!',
           link: Link(
-            webUrl: Uri.parse(iOSAppStoreUrl),
-            mobileWebUrl: Uri.parse(iOSAppStoreUrl),
+            iosExecutionParams: {'cardData': encryptedData, 'path': "decode"},
           ),
         ),
         buttons: [
