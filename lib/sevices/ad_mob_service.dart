@@ -5,7 +5,7 @@ class AdMobService {
   //앱 열기 광고
   static String? get appOpenAdUnitId {
     if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/5575463023'; //테스트용
+      return 'ca-app-pub-8028621037426483/9229179871'; //실제용
     }
     return null;
   }
@@ -13,7 +13,7 @@ class AdMobService {
   //전면 광고
   static String? get interstitialAdUnitId {
     if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/4411468910'; //테스트용
+      return 'ca-app-pub-8028621037426483/5609794219'; //실제용
     }
     return null;
   }
