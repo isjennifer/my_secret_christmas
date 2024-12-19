@@ -146,19 +146,63 @@ class _PostboxMessagePageState extends State<PostboxMessagePage>
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20),
                                       child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            '${widget.content}\n\n${widget.sender}가,\n${widget.recipient}에게.',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              height: 1.5,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w500,
+                                          const SizedBox(height: 24),
+                                          // 받는 사람 (고정)
+                                          Container(
+                                            width: double.infinity,
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              '${widget.recipient}에게,',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500,
+                                              ),
                                             ),
-                                            textAlign: TextAlign.center,
                                           ),
+
+                                          const SizedBox(height: 24),
+
+                                          // 내용 (스크롤 가능)
+                                          Expanded(
+                                            child: Scrollbar(
+                                              thickness: 6.0, // 스크롤바 두께
+                                              radius: const Radius.circular(
+                                                  3.0), // 스크롤바 모서리 둥글기
+                                              thumbVisibility:
+                                                  false, // 스크롤바 항상 표시
+                                              child: SingleChildScrollView(
+                                                child: Text(
+                                                  widget.content,
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    height: 1.5,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          const SizedBox(height: 24),
+
+                                          // 보내는 사람 (고정)
+                                          Container(
+                                            width: double.infinity,
+                                            alignment: Alignment.centerRight,
+                                            child: Text(
+                                              '${widget.sender}가.',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
                                         ],
                                       ),
                                     ),
