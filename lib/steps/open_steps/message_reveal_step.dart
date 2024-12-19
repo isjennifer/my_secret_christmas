@@ -170,21 +170,27 @@ class _MessageRevealPageState extends State<MessageRevealPage>
                                           // 내용 (스크롤 가능)
                                           Expanded(
                                             child: Scrollbar(
-                                              thickness: 6.0, // 스크롤바 두께
-                                              radius: const Radius.circular(
-                                                  3.0), // 스크롤바 모서리 둥글기
-                                              thumbVisibility:
-                                                  false, // 스크롤바 항상 표시
-                                              child: SingleChildScrollView(
-                                                child: Text(
-                                                  widget.content,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    height: 1.5,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w500,
+                                              thickness: 6.0,
+                                              radius:
+                                                  const Radius.circular(3.0),
+                                              thumbVisibility: false,
+                                              child: Container(
+                                                // 또는 SizedBox
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 5),
+                                                width: double.infinity,
+                                                child: SingleChildScrollView(
+                                                  child: Text(
+                                                    widget.content,
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      height: 1.5,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                    textAlign: TextAlign.center,
                                                   ),
-                                                  textAlign: TextAlign.center,
                                                 ),
                                               ),
                                             ),
