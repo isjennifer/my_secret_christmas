@@ -33,7 +33,7 @@ Future<void> main() async {
   // ;
   WidgetsFlutterBinding.ensureInitialized();
   // 가로 모드 제한
-  SystemChrome.setPreferredOrientations([
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
@@ -320,8 +320,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         );
                       },
                       child: SizedBox(
-                        width: 130,
-                        height: 130,
+                        width: MediaQuery.of(context).size.width * 0.35,
+                        height: MediaQuery.of(context).size.width * 0.35,
                         child: Image.asset(
                           'assets/book.png',
                           fit: BoxFit.cover,
@@ -342,8 +342,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         );
                       },
                       child: SizedBox(
-                        width: 140,
-                        height: 140,
+                        width: MediaQuery.of(context).size.width * 0.35,
+                        height: MediaQuery.of(context).size.width * 0.35,
                         child: Image.asset(
                           'assets/postbox.png',
                           fit: BoxFit.cover,
