@@ -54,7 +54,7 @@
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-8028621037426483~4411999283</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
+	<true/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>instagram-stories</string>
