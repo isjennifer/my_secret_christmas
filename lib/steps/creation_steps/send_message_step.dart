@@ -207,7 +207,7 @@ class _SendMessageStepState extends ConsumerState<SendMessageStep>
 
                               // 안드로이드 지원 안됨 메시지
                               const Text(
-                                '⚠️ 본 앱은 현재 Android 버전을 지원하지 않습니다.\n🍎 iOS 사용자에게만 공유해주세요!',
+                                '⚠️ 본 앱은 iOS 기기에 최적화되어 있습니다.\n🍎 iOS 사용자에게만 공유해주세요!',
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),
