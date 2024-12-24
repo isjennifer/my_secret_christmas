@@ -37,11 +37,13 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  print('가로모드제한');
   // 구글 애드 초기화
   await MobileAds.instance.initialize();
+  print('구글애드초기화');
   // 앱 열기 광고 로드
+
   final appOpenAdManager = AppOpenAdManager();
-  await appOpenAdManager.loadAppOpenAd();
 
   // 앱이 포그라운드로 돌아올 때 광고 표시
   SystemChannels.lifecycle.setMessageHandler((message) async {
@@ -62,14 +64,15 @@ Future<void> main() async {
   runApp(
     // 최상위 위젯을 ProviderScope로 감싸기
     ProviderScope(
-      child: MyApp(),
+      child: MyApp(appOpenAdManager: appOpenAdManager),
     ),
   );
 }
 
 // This widget is the root of your application.
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final AppOpenAdManager appOpenAdManager;
+  const MyApp({super.key, required this.appOpenAdManager});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -78,12 +81,39 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final AudioService _audioService = AudioService();
   final CardEncryptionService _cardEncryptService = CardEncryptionService();
-
+  late AppOpenAdManager appOpenAdManager;
   @override
   void initState() {
     super.initState();
+    appOpenAdManager = widget.appOpenAdManager;
     _initBackgroundMusic();
     WidgetsBinding.instance.addObserver(this);
+
+    // Create a ConsentRequestParameters object.
+    final params = ConsentRequestParameters();
+
+    // Request an update to consent information on every app launch
+    ConsentInformation.instance.requestConsentInfoUpdate(
+      params,
+      () async {
+        // 동의 폼 로드 후 광고 로드
+        await ConsentForm.loadAndShowConsentFormIfRequired((loadAndShowError) {
+          if (loadAndShowError != null) {
+            // Consent gathering failed
+            print("Consent form failed to load");
+            return;
+          }
+
+          // Consent has been gathered.
+          appOpenAdManager.loadAppOpenAd();
+          print('Consent gathered successfully');
+        });
+      },
+      (FormError error) {
+        // Handle the error
+        print("Error updating consent info: ${error.message}");
+      },
+    );
   }
 
   Future<void> _initBackgroundMusic() async {
@@ -159,11 +189,12 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool _showLogo = true; // 초기에는 로고를 보여줍니다
+  late AppOpenAdManager appOpenAdManager;
 
   @override
   void initState() {
     super.initState();
-
+    appOpenAdManager = AppOpenAdManager();
     Timer(const Duration(seconds: 2), () {
       setState(() {
         _showLogo = false; // 로고를 숨기고 스플래시 이미지를 보여줍니다
@@ -172,7 +203,7 @@ class _SplashScreenState extends State<SplashScreen> {
       // 추가로 1초 후에 메인 페이지로 이동하고 광고 표시
       Timer(const Duration(seconds: 2), () {
         // 광고 표시
-        final appOpenAdManager = AppOpenAdManager();
+
         appOpenAdManager.showAdIfAvailable();
 
         // 메인 페이지로 이동
